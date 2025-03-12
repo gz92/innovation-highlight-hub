@@ -1,6 +1,7 @@
 
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { Link } from "react-router-dom";
 import Header from "../components/Header";
 import CompanyCard from "../components/CompanyCard";
 import { InnovationData } from "../types";
@@ -97,6 +98,15 @@ const Index = () => {
               />
             </div>
           ))}
+        </div>
+        
+        <div className="mt-16">
+          <Link 
+            to="/submit" 
+            className="inline-flex items-center px-6 py-3 rounded-lg text-primary-foreground font-medium bg-primary hover:bg-primary/90 transition-colors"
+          >
+            Submit Your Innovation
+          </Link>
         </div>
       </main>
       
