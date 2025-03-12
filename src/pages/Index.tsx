@@ -1,8 +1,6 @@
 
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Link } from "react-router-dom";
-import Header from "../components/Header";
 import CompanyCard from "../components/CompanyCard";
 import { InnovationData } from "../types";
 import { useAnimateIn } from "../utils/animations";
@@ -84,9 +82,23 @@ const Index = () => {
         />
       </div>
       
-      <Header innovationDescription={data.Innovation} />
-      
-      <main className="w-full max-w-7xl mx-auto px-6 pb-24 text-center">
+      <main className="w-full max-w-7xl mx-auto px-6 py-16 pb-24">
+        <div className="text-center mb-16">
+          <div className="inline-block mb-4">
+            <span className="text-sm font-medium text-primary px-3 py-1 bg-primary/10 rounded-full">
+              Innovation Spotlight
+            </span>
+          </div>
+          
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground mb-4">
+            Discover Innovation
+          </h1>
+          
+          <p className="text-muted-foreground max-w-3xl mx-auto text-lg leading-relaxed text-pretty">
+            {data.Innovation}
+          </p>
+        </div>
+        
         <div className={`grid gap-6 sm:grid-cols-2 lg:grid-cols-3 transition-all duration-1000 ease-out ${
           animate ? 'opacity-100' : 'opacity-0 translate-y-8'
         }`}>
@@ -98,15 +110,6 @@ const Index = () => {
               />
             </div>
           ))}
-        </div>
-        
-        <div className="mt-16">
-          <Link 
-            to="/submit" 
-            className="inline-flex items-center px-6 py-3 rounded-lg text-primary-foreground font-medium bg-primary hover:bg-primary/90 transition-colors"
-          >
-            Submit Your Innovation
-          </Link>
         </div>
       </main>
       
