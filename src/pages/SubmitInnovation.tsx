@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -94,23 +93,21 @@ const SubmitInnovation = () => {
     setIsSubmitting(true);
     
     try {
-      // Construct query parameters for GET request
-      const params = new URLSearchParams();
-      params.append("name", formData.name);
-      params.append("email", formData.email);
-      params.append("title", formData.title);
-      params.append("description", formData.description);
+      // Prepare form data for submission
+      const payload = new FormData();
+      payload.append("name", formData.name);
+      payload.append("email", formData.email);
+      payload.append("title", formData.title);
+      payload.append("description", formData.description);
       
-      // Note: Files cannot be sent directly via GET request, so we're only sending the metadata
-      // In a real-world scenario, you would use a file upload service and send the file URL
+      if (formData.file) {
+        payload.append("file", formData.file);
+      }
       
-      // Send webhook using GET request
-      const webhookUrl = `https://hunren.app.n8n.cloud/webhook-test/6be710f0-50ef-4b85-921d-f3435f6d466e?${params.toString()}`;
-      const response = await fetch(webhookUrl, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
+      // Send webhook using POST request
+      const response = await fetch("https://hunren.app.n8n.cloud/webhook-test/6be710f0-50ef-4b85-921d-f3435f6d466e", {
+        method: "POST",
+        body: payload,
       });
       
       if (!response.ok) {
