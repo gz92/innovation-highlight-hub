@@ -85,7 +85,7 @@ const Index = () => {
       
       <Header innovationDescription={data.Innovation} />
       
-      <main className="w-full max-w-7xl mx-auto px-6 pb-24">
+      <main className="w-full max-w-7xl mx-auto px-6 pb-24 text-center">
         <div className={`grid gap-6 sm:grid-cols-2 lg:grid-cols-3 transition-all duration-1000 ease-out ${
           animate ? 'opacity-100' : 'opacity-0 translate-y-8'
         }`}>

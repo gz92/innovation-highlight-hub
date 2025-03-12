@@ -32,7 +32,7 @@ const CompanyCard = ({ company, index }: CompanyCardProps) => {
           className="flex justify-between items-start cursor-pointer group"
           onClick={toggleExpand}
         >
-          <div className="space-y-2">
+          <div className="space-y-2 text-center w-full">
             <h3 className="text-xl md:text-2xl font-semibold tracking-tight group-hover:text-primary transition-colors">
               {company.name}
             </h3>
@@ -46,7 +46,7 @@ const CompanyCard = ({ company, index }: CompanyCardProps) => {
           </div>
           
           <button 
-            className="p-2 rounded-full hover:bg-secondary transition-colors"
+            className="p-2 rounded-full hover:bg-secondary transition-colors ml-2 flex-shrink-0"
             aria-label={isExpanded ? "Collapse details" : "Expand details"}
           >
             {isExpanded ? (
@@ -93,7 +93,7 @@ const CompanyCard = ({ company, index }: CompanyCardProps) => {
             
             <div className="pt-2">
               <div className="flex items-start space-x-3">
-                <BarChart className="w-5 h-5 text-primary mt-1 flex-shrink-0" />
+                <BarChart className="w-5 w-5 text-primary mt-1 flex-shrink-0" />
                 <div>
                   <h4 className="text-sm font-medium text-foreground">Industry Filters</h4>
                   <div className="flex flex-wrap gap-2 mt-2">

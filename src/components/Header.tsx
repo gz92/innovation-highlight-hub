@@ -9,7 +9,7 @@ const Header = ({ innovationDescription }: HeaderProps) => {
   const animate = useAnimateIn();
   
   return (
-    <header className="w-full max-w-6xl mx-auto px-6 py-16 md:py-24">
+    <header className="w-full max-w-6xl mx-auto px-6 py-16 md:py-24 text-center">
       <div className={`space-y-6 transition-all duration-1000 ease-out ${animate ? 'opacity-100' : 'opacity-0 translate-y-8'}`}>
         <div className="inline-block mb-2">
           <span className="text-sm font-medium text-primary px-3 py-1 bg-primary/10 rounded-full">
@@ -21,7 +21,7 @@ const Header = ({ innovationDescription }: HeaderProps) => {
           Innovation Spotlight
         </h1>
         
-        <p className="text-muted-foreground max-w-3xl text-lg md:text-xl font-normal leading-relaxed text-pretty">
+        <p className="text-muted-foreground max-w-3xl text-lg md:text-xl font-normal leading-relaxed text-pretty mx-auto">
           {innovationDescription}
         </p>
       </div>
