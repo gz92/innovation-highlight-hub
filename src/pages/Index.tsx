@@ -90,11 +90,12 @@ const Index = () => {
           animate ? 'opacity-100' : 'opacity-0 translate-y-8'
         }`}>
           {data.output.persona_companies.map((company, index) => (
-            <CompanyCard 
-              key={company.name} 
-              company={company} 
-              index={index} 
-            />
+            <div className="hover-scale" key={company.name}>
+              <CompanyCard 
+                company={company} 
+                index={index} 
+              />
+            </div>
           ))}
         </div>
       </main>
