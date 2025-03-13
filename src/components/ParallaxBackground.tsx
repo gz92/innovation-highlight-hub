@@ -26,13 +26,13 @@ const ParallaxBackground = ({ children }: ParallaxBackgroundProps) => {
         aria-hidden="true"
       >
         <div 
-          className="absolute top-0 left-1/2 -translate-x-1/2 w-[150%] aspect-square bg-gradient-to-b from-primary/20 to-transparent rounded-full blur-3xl opacity-70"
+          className="absolute top-0 left-1/2 -translate-x-1/2 w-[150%] aspect-square bg-gradient-to-b from-primary/10 to-transparent rounded-full blur-3xl opacity-50 dark:opacity-70"
           style={{ transform: `translate(-50%, ${scrollY * 0.1}px)` }}
         />
         
         {/* Additional background element with opposite parallax direction */}
         <div 
-          className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[120%] aspect-square bg-gradient-to-t from-primary/15 to-transparent rounded-full blur-3xl opacity-60"
+          className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[120%] aspect-square bg-gradient-to-t from-primary/10 to-transparent rounded-full blur-3xl opacity-40 dark:opacity-60"
           style={{ transform: `translate(-50%, ${scrollY * -0.05}px)` }}
         />
       </div>
