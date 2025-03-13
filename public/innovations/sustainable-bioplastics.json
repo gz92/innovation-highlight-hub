@@ -1,0 +1,24 @@
+
+{
+  "Innovation": "Sustainable bioplastics derived from agricultural waste. This innovation addresses plastic pollution while creating value from previously unused biomaterials.",
+  "output": {
+    "persona_companies": [
+      {
+        "name": "GreenMaterial Innovations",
+        "characteristics": "An environmentally focused materials science company specializing in sustainable alternatives to conventional plastics. Committed to circular economy principles and zero-waste manufacturing.",
+        "pain_points": "Scaling production to commercial levels while maintaining cost competitiveness with traditional plastics. Addressing variability in agricultural waste feedstock and optimizing processing methods.",
+        "apollo_filter": "Industry: 'Materials Science', 'Sustainable Manufacturing'; Employee Count: 30-150; Keywords: 'Bioplastics', 'Circular Economy', 'Waste Valorization'.",
+        "relevance_indicators": "Participation in sustainability innovation challenges, partnerships with agricultural cooperatives, and pilot programs with consumer packaging companies.",
+        "company_research_focus": "Study their current material specifications, production capacity plans, and target markets for initial commercial applications."
+      },
+      {
+        "name": "EcoPackage Global",
+        "characteristics": "A large packaging solutions provider transitioning toward sustainable materials. Seeking innovations that can be implemented at scale across their diverse product lines.",
+        "pain_points": "Customer demand for sustainable packaging without increased costs. Technical challenges adapting manufacturing equipment to work with new bioplastic formulations.",
+        "apollo_filter": "Industry: 'Packaging', 'Consumer Goods'; Employee Count: 500+; Keywords: 'Sustainable Packaging', 'Eco-friendly Materials', 'Green Manufacturing'.",
+        "relevance_indicators": "Corporate sustainability commitments with specific plastic reduction targets, R&D investments in alternative materials, and sustainability-focused marketing campaigns.",
+        "company_research_focus": "Analyze their current sustainability roadmap, existing partnerships with material suppliers, and specific performance requirements for packaging applications."
+      }
+    ]
+  }
+}

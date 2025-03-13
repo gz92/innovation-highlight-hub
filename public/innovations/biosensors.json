@@ -1,0 +1,24 @@
+
+{
+  "Innovation": "Advanced biosensors for continuous health monitoring with AI-powered analytics for early disease detection. This approach enables preventive healthcare through non-invasive wearable technology.",
+  "output": {
+    "persona_companies": [
+      {
+        "name": "HealthTech Monitoring Systems",
+        "characteristics": "A rapidly growing health technology company focused on developing consumer-grade medical monitoring devices. Known for combining cutting-edge sensor technology with user-friendly interfaces.",
+        "pain_points": "Challenges with sensor accuracy in real-world conditions and battery life limitations. Regulatory hurdles for medical-grade approvals and integration with existing healthcare IT systems.",
+        "apollo_filter": "Industry: 'Health Tech', 'Medical Devices'; Employee Count: 50-200; Keywords: 'Wearable Technology', 'Preventive Healthcare', 'Remote Monitoring'.",
+        "relevance_indicators": "Presence at healthcare innovation conferences, partnerships with insurance providers for preventative care programs, and academic publications on sensor technology improvements.",
+        "company_research_focus": "Examine their current product pipeline, regulatory approval status for existing devices, and strategic partnerships with healthcare providers."
+      },
+      {
+        "name": "AIBioAnalytics Corporation",
+        "characteristics": "Leading AI solutions provider specializing in healthcare data analysis and predictive diagnostics. Committed to transforming healthcare through intelligent data processing and machine learning.",
+        "pain_points": "Data privacy concerns and implementation of HIPAA-compliant systems. Challenges in algorithm development for diverse patient populations and integration with legacy medical record systems.",
+        "apollo_filter": "Industry: 'Artificial Intelligence', 'Healthcare Analytics'; Employee Count: 100-500; Keywords: 'Predictive Healthcare', 'Medical AI', 'Health Data Processing'.",
+        "relevance_indicators": "Recent funding rounds specifically for health monitoring solutions, executive presentations on preventative healthcare technology, and open positions for biomedical AI specialists.",
+        "company_research_focus": "Analyze their AI model validation methods, data handling protocols, and success metrics for existing healthcare implementations."
+      }
+    ]
+  }
+}

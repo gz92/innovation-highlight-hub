@@ -1,36 +1,40 @@
 
 import { useEffect, useState } from "react";
+import { useSearchParams, Link } from "react-router-dom";
 import { toast } from "sonner";
-import CompanyCard from "../components/CompanyCard";
+import { ArrowLeft, Building2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { InnovationData } from "../types";
-import { useAnimateIn } from "../utils/animations";
+import CompanyCard from "../components/CompanyCard";
 
 const Index = () => {
-  const [data, setData] = useState<InnovationData | null>(null);
+  const [searchParams] = useSearchParams();
+  const projectId = searchParams.get("id");
+  const [project, setProject] = useState<InnovationData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const animate = useAnimateIn();
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchProjectDetails = async () => {
+      if (!projectId) {
+        toast.error("No project specified");
+        setLoading(false);
+        return;
+      }
+
       try {
-        const response = await fetch("/data.json");
+        // Load the project data from the innovations folder
+        const response = await fetch(`/innovations/${projectId}`);
         
         if (!response.ok) {
-          throw new Error("Failed to fetch data");
+          throw new Error("Failed to load project details");
         }
         
-        const jsonData = await response.json();
-        
-        if (!Array.isArray(jsonData) || jsonData.length === 0) {
-          throw new Error("Invalid data format");
-        }
-        
-        setData(jsonData[0]);
+        const data = await response.json();
+        setProject(data);
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : "An unknown error occurred";
-        setError(errorMessage);
-        toast.error("Failed to load innovation data", {
+        toast.error("Failed to load project details", {
           description: errorMessage,
         });
       } finally {
@@ -38,86 +42,80 @@ const Index = () => {
       }
     };
 
-    fetchData();
-  }, []);
+    fetchProjectDetails();
+  }, [projectId]);
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="flex flex-col items-center space-y-4">
-          <div className="h-12 w-12 rounded-full border-4 border-primary/30 border-t-primary animate-spin"></div>
-          <p className="text-muted-foreground animate-pulse">Loading innovation data...</p>
+      <div className="container max-w-4xl py-12">
+        <div className="space-y-8">
+          <Skeleton className="h-8 w-2/3" />
+          <Skeleton className="h-32 w-full" />
+          <div className="space-y-4">
+            <Skeleton className="h-6 w-1/4" />
+            <div className="space-y-2">
+              <Skeleton className="h-32 w-full" />
+              <Skeleton className="h-32 w-full" />
+              <Skeleton className="h-32 w-full" />
+            </div>
+          </div>
         </div>
       </div>
     );
   }
 
-  if (error || !data) {
+  if (!project) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6">
-        <div className="max-w-md text-center">
-          <h2 className="text-2xl font-bold text-foreground mb-4">Unable to Load Data</h2>
-          <p className="text-muted-foreground mb-6">
-            We couldn't load the innovation data. Please check that the data file is properly formatted and try again.
+      <div className="container max-w-4xl py-12 text-center">
+        <div className="space-y-4">
+          <h1 className="text-2xl font-bold">Project Not Found</h1>
+          <p className="text-muted-foreground">
+            The project you're looking for doesn't exist or couldn't be loaded.
           </p>
-          <button 
-            onClick={() => window.location.reload()} 
-            className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
-          >
-            Try Again
-          </button>
+          <Button asChild>
+            <Link to="/projects">Browse All Projects</Link>
+          </Button>
         </div>
       </div>
     );
   }
+
+  // Format title from filename
+  const title = projectId
+    ? projectId.replace('.json', '').replace(/-/g, ' ')
+    : 'Project Details';
 
   return (
-    <div className="min-h-screen w-full">
-      <div 
-        className="fixed inset-0 pointer-events-none -z-10 overflow-hidden"
-        aria-hidden="true"
-      >
-        <div 
-          className="absolute top-0 left-1/2 -translate-x-1/2 w-[150%] aspect-square bg-gradient-to-b from-primary/5 to-transparent rounded-full blur-3xl opacity-50"
-        />
+    <div className="container max-w-4xl py-12">
+      <Button variant="ghost" asChild className="mb-6 -ml-2">
+        <Link to="/projects" className="flex items-center gap-2">
+          <ArrowLeft className="h-4 w-4" />
+          Back to Projects
+        </Link>
+      </Button>
+
+      <h1 className="text-3xl font-bold tracking-tight mb-4 capitalize">
+        {title}
+      </h1>
+
+      <div className="bg-card rounded-xl p-6 border border-border/40 mb-10 subtle-shadow">
+        <p className="text-lg leading-relaxed text-pretty">
+          {project.Innovation}
+        </p>
       </div>
-      
-      <main className="w-full max-w-7xl mx-auto px-6 py-16 pb-24">
-        <div className="text-center mb-16">
-          <div className="inline-block mb-4">
-            <span className="text-sm font-medium text-primary px-3 py-1 bg-primary/10 rounded-full">
-              Innovation Spotlight
-            </span>
-          </div>
-          
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground mb-4">
-            Discover Innovation
-          </h1>
-          
-          <p className="text-muted-foreground max-w-3xl mx-auto text-lg leading-relaxed text-pretty">
-            {data.Innovation}
-          </p>
+
+      <div className="space-y-8">
+        <div className="flex items-center gap-2">
+          <Building2 className="h-5 w-5 text-primary" />
+          <h2 className="text-xl font-semibold">Potential Industry Partners</h2>
         </div>
-        
-        <div className={`grid gap-6 sm:grid-cols-2 lg:grid-cols-3 transition-all duration-1000 ease-out ${
-          animate ? 'opacity-100' : 'opacity-0 translate-y-8'
-        }`}>
-          {data.output.persona_companies.map((company, index) => (
-            <div className="hover-scale" key={company.name}>
-              <CompanyCard 
-                company={company} 
-                index={index} 
-              />
-            </div>
+
+        <div className="space-y-6">
+          {project.output.persona_companies.map((company, index) => (
+            <CompanyCard key={index} company={company} index={index} />
           ))}
         </div>
-      </main>
-      
-      <footer className="w-full py-8 border-t border-border/40">
-        <div className="max-w-7xl mx-auto px-6 text-center text-sm text-muted-foreground">
-          <p>Innovation Spotlight © {new Date().getFullYear()}</p>
-        </div>
-      </footer>
+      </div>
     </div>
   );
 };

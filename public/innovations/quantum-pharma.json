@@ -1,0 +1,24 @@
+
+{
+  "Innovation": "Quantum computing algorithms optimized for pharmaceutical molecule discovery. This technology accelerates drug development by enabling rapid simulation of molecular interactions.",
+  "output": {
+    "persona_companies": [
+      {
+        "name": "QuantumPharma Solutions",
+        "characteristics": "A specialized computational pharmaceutical company leveraging quantum computing for drug discovery. Pioneering the application of quantum algorithms to solve complex molecular modeling challenges.",
+        "pain_points": "Access to quantum computing resources at scale and integration of quantum solutions with traditional pharmaceutical workflows. Talent acquisition in the specialized field of quantum computational chemistry.",
+        "apollo_filter": "Industry: 'Pharmaceutical Research', 'Quantum Computing'; Employee Count: 20-150; Keywords: 'Drug Discovery', 'Molecular Modeling', 'Quantum Algorithms'.",
+        "relevance_indicators": "Research partnerships with quantum hardware providers, presentations at pharmaceutical innovation conferences, and investments in quantum-specific infrastructure.",
+        "company_research_focus": "Investigate their drug development pipeline, quantum hardware partnerships, and published results on simulation acceleration metrics."
+      },
+      {
+        "name": "GlobalRx Innovations",
+        "characteristics": "A large pharmaceutical company with significant R&D investment in computational drug discovery methods. Focused on reducing time-to-market for novel therapeutics through technological innovation.",
+        "pain_points": "Lengthy traditional drug development cycles and high costs of failed candidates in late-stage trials. Seeking computational methods to improve early-stage candidate selection efficacy.",
+        "apollo_filter": "Industry: 'Pharmaceuticals', 'Biotechnology'; Employee Count: 1000+; Keywords: 'Computational Chemistry', 'Drug Development', 'R&D Innovation'.",
+        "relevance_indicators": "Established computational chemistry department, strategic initiatives focused on accelerating drug discovery, and history of adopting emerging technologies.",
+        "company_research_focus": "Examine their current computational methods, recent acquisitions in technology companies, and stated goals for improving R&D efficiency."
+      }
+    ]
+  }
+}

@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
@@ -6,10 +5,10 @@ import { Search, Grid, Layout, SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { InnovationData } from "../types";
-import { useAnimateIn } from "../utils/animations";
+import { useIntersectionObserver } from "../utils/animations";
 
 // Project Card Component
-const ProjectCard = ({ project, index }: { project: InnovationData; index: number }) => {
+const ProjectCard = ({ project, index, filename }: { project: InnovationData; index: number; filename: string }) => {
   const { ref, isIntersecting } = useIntersectionObserver();
   
   return (
@@ -30,7 +29,7 @@ const ProjectCard = ({ project, index }: { project: InnovationData; index: numbe
       
       <div className="p-5">
         <h3 className="text-xl font-semibold line-clamp-2 mb-2">
-          {project.Innovation.split(".")[0]}.
+          {filename.replace('.json', '').replace(/-/g, ' ')}
         </h3>
         
         <p className="text-muted-foreground text-sm line-clamp-3 mb-4">
@@ -46,78 +45,66 @@ const ProjectCard = ({ project, index }: { project: InnovationData; index: numbe
         </div>
         
         <Button asChild variant="outline" size="sm" className="w-full">
-          <Link to="/">View Details</Link>
+          <Link to={`/project-details?id=${filename}`}>View Details</Link>
         </Button>
       </div>
     </div>
   );
 };
 
-// Helper Hook for Intersection Observer
-const useIntersectionObserver = () => {
-  const [isIntersecting, setIsIntersecting] = useState(false);
-  const [ref, setRef] = useState<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    if (!ref) return;
-    
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsIntersecting(entry.isIntersecting);
-      },
-      { threshold: 0.1 }
-    );
-    
-    observer.observe(ref);
-    
-    return () => {
-      if (ref) observer.unobserve(ref);
-    };
-  }, [ref]);
-
-  return { ref: setRef, isIntersecting };
-};
+interface ProjectInfo {
+  data: InnovationData;
+  filename: string;
+}
 
 const ProjectBrowser = () => {
-  const [projects, setProjects] = useState<InnovationData[]>([]);
+  const [projects, setProjects] = useState<ProjectInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const animate = useAnimateIn();
 
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await fetch("/data.json");
+        const response = await fetch("/innovations/index.json")
+          .catch(() => {
+            console.log("No index file found, attempting to load individual files");
+            return { ok: false };
+          });
         
-        if (!response.ok) {
-          throw new Error("Failed to fetch projects");
+        let filenames: string[] = [];
+        
+        if (response.ok) {
+          const indexData = await response.json();
+          filenames = indexData.files || [];
+        } else {
+          filenames = [
+            "bio-3d-models.json",
+            "biosensors.json",
+            "quantum-pharma.json",
+            "sustainable-bioplastics.json"
+          ];
         }
         
-        const jsonData = await response.json();
+        const projectPromises = filenames.map(async (filename) => {
+          try {
+            const fileResponse = await fetch(`/innovations/${filename}`);
+            if (!fileResponse.ok) {
+              throw new Error(`Failed to load ${filename}`);
+            }
+            const data = await fileResponse.json();
+            return { data, filename };
+          } catch (error) {
+            console.error(`Error loading ${filename}:`, error);
+            toast.error(`Failed to load ${filename}`);
+            return null;
+          }
+        });
         
-        if (!Array.isArray(jsonData) || jsonData.length === 0) {
-          throw new Error("Invalid data format");
-        }
+        const projectResults = await Promise.all(projectPromises);
+        const validProjects = projectResults.filter(project => project !== null) as ProjectInfo[];
         
-        // For demo purposes, let's duplicate the project to have more items
-        const duplicatedProjects = [
-          ...jsonData,
-          ...jsonData.map(project => ({
-            ...project,
-            Innovation: "Advanced biosensors for continuous health monitoring with AI-powered analytics for early disease detection. This approach enables preventive healthcare through non-invasive wearable technology.",
-          })),
-          ...jsonData.map(project => ({
-            ...project,
-            Innovation: "Quantum computing algorithms optimized for pharmaceutical molecule discovery. This technology accelerates drug development by enabling rapid simulation of molecular interactions.",
-          })),
-          ...jsonData.map(project => ({
-            ...project,
-            Innovation: "Sustainable bioplastics derived from agricultural waste. This innovation addresses plastic pollution while creating value from previously unused biomaterials.",
-          }))
-        ];
-        
-        setProjects(duplicatedProjects);
+        setProjects(validProjects);
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : "An unknown error occurred";
         toast.error("Failed to load projects", {
@@ -132,7 +119,8 @@ const ProjectBrowser = () => {
   }, []);
 
   const filteredProjects = projects.filter(project => 
-    project.Innovation.toLowerCase().includes(searchTerm.toLowerCase())
+    project.data.Innovation.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    project.filename.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (loading) {
@@ -168,7 +156,6 @@ const ProjectBrowser = () => {
           </p>
         </div>
         
-        {/* Filters and Controls */}
         <div className="flex flex-col sm:flex-row gap-4 items-center mb-8">
           <div className="relative flex-grow">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -208,17 +195,19 @@ const ProjectBrowser = () => {
           </div>
         </div>
         
-        {/* Project Grid */}
         {filteredProjects.length > 0 ? (
           <div className={`${
             viewMode === "grid" 
               ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" 
               : "space-y-4"
-          } transition-all duration-500 ease-out ${
-            animate ? 'opacity-100' : 'opacity-0 translate-y-8'
-          }`}>
+          } transition-all duration-500 ease-out`}>
             {filteredProjects.map((project, index) => (
-              <ProjectCard key={index} project={project} index={index} />
+              <ProjectCard 
+                key={project.filename} 
+                project={project.data} 
+                index={index} 
+                filename={project.filename}
+              />
             ))}
           </div>
         ) : (
