@@ -20,7 +20,7 @@ const FloatingParticles = () => {
     if (!container) return;
     
     // Create particles
-    const particleCount = 20;
+    const particleCount = 30; // Increased from 20
     const particles: Particle[] = [];
     
     const createParticles = () => {
@@ -31,10 +31,10 @@ const FloatingParticles = () => {
         particles.push({
           x: Math.random() * containerWidth,
           y: Math.random() * containerHeight,
-          size: Math.random() * 4 + 1,
-          speedX: Math.random() * 0.5 - 0.25,
-          speedY: Math.random() * 0.5 - 0.25,
-          opacity: Math.random() * 0.5 + 0.1
+          size: Math.random() * 6 + 2, // Increased size
+          speedX: Math.random() * 0.7 - 0.35, // Increased speed
+          speedY: Math.random() * 0.7 - 0.35, // Increased speed
+          opacity: Math.random() * 0.7 + 0.2 // Increased opacity
         });
       }
       

@@ -82,24 +82,24 @@
   }
   
   .grid-background::before {
-    @apply content-[''] absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:50px_50px] -z-10 opacity-30;
+    @apply content-[''] absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[size:40px_40px] -z-10 opacity-50;
   }
 
   .dark .grid-background::before {
-    @apply bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)];
+    @apply bg-[linear-gradient(rgba(255,255,255,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.1)_1px,transparent_1px)];
   }
   
   /* Add floating particles for the futuristic look */
   .particle {
-    @apply absolute rounded-full pointer-events-none opacity-40;
-    background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
-    animation: float 8s infinite ease-in-out;
+    @apply absolute rounded-full pointer-events-none;
+    background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 70%);
+    animation: float 12s infinite ease-in-out;
   }
   
   @keyframes float {
     0%, 100% { transform: translateY(0) translateX(0); }
-    25% { transform: translateY(-15px) translateX(15px); }
-    50% { transform: translateY(-25px) translateX(0); }
-    75% { transform: translateY(-15px) translateX(-15px); }
+    25% { transform: translateY(-25px) translateX(20px); }
+    50% { transform: translateY(-40px) translateX(0); }
+    75% { transform: translateY(-25px) translateX(-20px); }
   }
 }
