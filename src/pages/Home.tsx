@@ -1,4 +1,3 @@
-
 import { ArrowRightIcon, BeakerIcon, RocketIcon, BarChart3Icon, CheckIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -6,15 +5,6 @@ import { Link } from "react-router-dom";
 const Home = () => {
   return (
     <div className="min-h-screen w-full">
-      <div 
-        className="fixed inset-0 pointer-events-none -z-10 overflow-hidden"
-        aria-hidden="true"
-      >
-        <div 
-          className="absolute top-0 left-1/2 -translate-x-1/2 w-[150%] aspect-square bg-gradient-to-b from-primary/5 to-transparent rounded-full blur-3xl opacity-50"
-        />
-      </div>
-      
       <main className="w-full max-w-7xl mx-auto px-6 py-16 pb-24 space-y-20">
         {/* Hero Section */}
         <section className="text-center space-y-6 pt-8">

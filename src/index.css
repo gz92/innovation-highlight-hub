@@ -88,4 +88,18 @@
   .dark .grid-background::before {
     @apply bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)];
   }
+  
+  /* Add floating particles for the futuristic look */
+  .particle {
+    @apply absolute rounded-full pointer-events-none opacity-40;
+    background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
+    animation: float 8s infinite ease-in-out;
+  }
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0) translateX(0); }
+    25% { transform: translateY(-15px) translateX(15px); }
+    50% { transform: translateY(-25px) translateX(0); }
+    75% { transform: translateY(-15px) translateX(-15px); }
+  }
 }

@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { toast } from "sonner";
@@ -23,7 +22,6 @@ const Index = () => {
       }
 
       try {
-        // Load the project data from the innovations folder
         const response = await fetch(`/innovations/${projectId}`);
         
         if (!response.ok) {
@@ -80,22 +78,12 @@ const Index = () => {
     );
   }
 
-  // Format title from filename
   const title = projectId
     ? projectId.replace('.json', '').replace(/-/g, ' ')
     : 'Project Details';
 
   return (
     <div className="min-h-screen w-full">
-      <div 
-        className="fixed inset-0 pointer-events-none -z-10 overflow-hidden"
-        aria-hidden="true"
-      >
-        <div 
-          className="absolute top-0 left-1/2 -translate-x-1/2 w-[150%] aspect-square bg-gradient-to-b from-primary/5 to-transparent rounded-full blur-3xl opacity-50"
-        />
-      </div>
-      
       <div className="container max-w-4xl py-12">
         <Button variant="ghost" asChild className="mb-6 -ml-2">
           <Link to="/projects" className="flex items-center gap-2">
