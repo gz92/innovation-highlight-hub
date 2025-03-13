@@ -27,13 +27,11 @@ const SubmitInnovation = () => {
 
   const [dragActive, setDragActive] = useState(false);
   
-  // Handle form field changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
   
-  // Handle file drop
   const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
@@ -46,7 +44,6 @@ const SubmitInnovation = () => {
     }
   }, []);
   
-  // Handle manual file selection
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
@@ -55,7 +52,6 @@ const SubmitInnovation = () => {
     }
   };
   
-  // Handle drag events
   const handleDrag = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
@@ -67,23 +63,19 @@ const SubmitInnovation = () => {
     }
   }, []);
   
-  // Remove file
   const removeFile = () => {
     setFormData(prev => ({ ...prev, file: null }));
     toast.info("File removed");
   };
   
-  // Submit form
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validate form
     if (!formData.name.trim() || !formData.email.trim() || !formData.title.trim() || !formData.description.trim()) {
       toast.error("Please fill out all required fields");
       return;
     }
     
-    // Basic email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
       toast.error("Please enter a valid email address");
@@ -93,7 +85,6 @@ const SubmitInnovation = () => {
     setIsSubmitting(true);
     
     try {
-      // Prepare form data for submission
       const payload = new FormData();
       payload.append("name", formData.name);
       payload.append("email", formData.email);
@@ -104,7 +95,6 @@ const SubmitInnovation = () => {
         payload.append("file", formData.file);
       }
       
-      // Send webhook using POST request
       const response = await fetch("https://hunren.app.n8n.cloud/webhook-test/6be710f0-50ef-4b85-921d-f3435f6d466e", {
         method: "POST",
         body: payload,
@@ -116,7 +106,6 @@ const SubmitInnovation = () => {
       
       toast.success("Innovation submitted successfully!");
       
-      // Reset form and redirect to home
       setFormData({
         name: "",
         email: "",
@@ -125,7 +114,6 @@ const SubmitInnovation = () => {
         file: null,
       });
       
-      // Redirect to home page after successful submission
       setTimeout(() => {
         navigate("/");
       }, 2000);
@@ -172,7 +160,6 @@ const SubmitInnovation = () => {
           onSubmit={handleSubmit} 
           className={`space-y-8 transition-all duration-1000 ease-out ${animate ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
         >
-          {/* Name Field */}
           <div className="space-y-2">
             <label htmlFor="name" className="text-sm font-medium flex items-center">
               Name <span className="text-destructive ml-1">*</span>
@@ -189,7 +176,6 @@ const SubmitInnovation = () => {
             />
           </div>
 
-          {/* Email Field */}
           <div className="space-y-2">
             <label htmlFor="email" className="text-sm font-medium flex items-center">
               Email <span className="text-destructive ml-1">*</span>
@@ -206,7 +192,6 @@ const SubmitInnovation = () => {
             />
           </div>
 
-          {/* Innovation Title Field */}
           <div className="space-y-2">
             <label htmlFor="title" className="text-sm font-medium flex items-center">
               Innovation Title <span className="text-destructive ml-1">*</span>
@@ -223,7 +208,6 @@ const SubmitInnovation = () => {
             />
           </div>
 
-          {/* Innovation Description Field */}
           <div className="space-y-2">
             <label htmlFor="description" className="text-sm font-medium flex items-center">
               Describe Your Innovation <span className="text-destructive ml-1">*</span>
@@ -240,7 +224,6 @@ const SubmitInnovation = () => {
             />
           </div>
 
-          {/* File Upload Field */}
           <div className="space-y-2">
             <label className="text-sm font-medium">Supporting Document</label>
             
@@ -294,7 +277,6 @@ const SubmitInnovation = () => {
             </p>
           </div>
 
-          {/* Submit Button */}
           <div className="pt-4">
             <button
               type="submit"

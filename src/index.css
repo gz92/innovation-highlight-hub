@@ -68,4 +68,24 @@
   .hover-scale {
     @apply transition-transform duration-300 hover:scale-[1.02];
   }
+
+  .futuristic-gradient {
+    @apply relative z-0 overflow-hidden;
+  }
+  
+  .futuristic-gradient::before {
+    @apply content-[''] absolute top-0 left-1/2 -translate-x-1/2 w-[150%] aspect-square bg-gradient-to-b from-primary/5 to-transparent rounded-full blur-3xl opacity-50 -z-10;
+  }
+  
+  .grid-background {
+    @apply relative z-0;
+  }
+  
+  .grid-background::before {
+    @apply content-[''] absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:50px_50px] -z-10 opacity-30;
+  }
+
+  .dark .grid-background::before {
+    @apply bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)];
+  }
 }

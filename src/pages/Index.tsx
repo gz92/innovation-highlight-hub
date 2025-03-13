@@ -86,34 +86,45 @@ const Index = () => {
     : 'Project Details';
 
   return (
-    <div className="container max-w-4xl py-12">
-      <Button variant="ghost" asChild className="mb-6 -ml-2">
-        <Link to="/projects" className="flex items-center gap-2">
-          <ArrowLeft className="h-4 w-4" />
-          Back to Projects
-        </Link>
-      </Button>
-
-      <h1 className="text-3xl font-bold tracking-tight mb-4 capitalize">
-        {title}
-      </h1>
-
-      <div className="bg-card rounded-xl p-6 border border-border/40 mb-10 subtle-shadow">
-        <p className="text-lg leading-relaxed text-pretty">
-          {project.Innovation}
-        </p>
+    <div className="min-h-screen w-full">
+      <div 
+        className="fixed inset-0 pointer-events-none -z-10 overflow-hidden"
+        aria-hidden="true"
+      >
+        <div 
+          className="absolute top-0 left-1/2 -translate-x-1/2 w-[150%] aspect-square bg-gradient-to-b from-primary/5 to-transparent rounded-full blur-3xl opacity-50"
+        />
       </div>
+      
+      <div className="container max-w-4xl py-12">
+        <Button variant="ghost" asChild className="mb-6 -ml-2">
+          <Link to="/projects" className="flex items-center gap-2">
+            <ArrowLeft className="h-4 w-4" />
+            Back to Projects
+          </Link>
+        </Button>
 
-      <div className="space-y-8">
-        <div className="flex items-center gap-2">
-          <Building2 className="h-5 w-5 text-primary" />
-          <h2 className="text-xl font-semibold">Potential Industry Partners</h2>
+        <h1 className="text-3xl font-bold tracking-tight mb-4 capitalize">
+          {title}
+        </h1>
+
+        <div className="bg-card rounded-xl p-6 border border-border/40 mb-10 subtle-shadow">
+          <p className="text-lg leading-relaxed text-pretty">
+            {project.Innovation}
+          </p>
         </div>
 
-        <div className="space-y-6">
-          {project.output.persona_companies.map((company, index) => (
-            <CompanyCard key={index} company={company} index={index} />
-          ))}
+        <div className="space-y-8">
+          <div className="flex items-center gap-2">
+            <Building2 className="h-5 w-5 text-primary" />
+            <h2 className="text-xl font-semibold">Potential Industry Partners</h2>
+          </div>
+
+          <div className="space-y-6">
+            {project.output.persona_companies.map((company, index) => (
+              <CompanyCard key={index} company={company} index={index} />
+            ))}
+          </div>
         </div>
       </div>
     </div>

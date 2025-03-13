@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
@@ -75,7 +76,8 @@ const ProjectBrowser = () => {
         let filenames: string[] = [];
         
         if (response.ok) {
-          const indexData = await response.json();
+          // Use type assertion to tell TypeScript this is a Response with a json method
+          const indexData = await (response as Response).json();
           filenames = indexData.files || [];
         } else {
           filenames = [
