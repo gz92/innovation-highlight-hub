@@ -89,17 +89,31 @@
     @apply bg-[linear-gradient(rgba(255,255,255,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.1)_1px,transparent_1px)];
   }
   
-  /* Add floating particles for the futuristic look */
-  .particle {
-    @apply absolute rounded-full pointer-events-none;
-    background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 70%);
-    animation: float 12s infinite ease-in-out;
+  /* Gradient wave animations */
+  @keyframes slow-pulse {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-5%) scale(1.05); }
   }
   
-  @keyframes float {
-    0%, 100% { transform: translateY(0) translateX(0); }
-    25% { transform: translateY(-25px) translateX(20px); }
-    50% { transform: translateY(-40px) translateX(0); }
-    75% { transform: translateY(-25px) translateX(-20px); }
+  @keyframes slow-pulse-reverse {
+    0%, 100% { transform: translateY(-5%) scale(1.05); }
+    50% { transform: translateY(0) scale(1); }
+  }
+  
+  @keyframes slow-pulse-delay {
+    0%, 100% { transform: translateY(-3%) scale(1.03); }
+    50% { transform: translateY(3%) scale(0.97); }
+  }
+  
+  .animate-slow-pulse {
+    animation: slow-pulse 15s infinite ease-in-out;
+  }
+  
+  .animate-slow-pulse-reverse {
+    animation: slow-pulse-reverse 20s infinite ease-in-out;
+  }
+  
+  .animate-slow-pulse-delay {
+    animation: slow-pulse-delay 12s infinite ease-in-out;
   }
 }

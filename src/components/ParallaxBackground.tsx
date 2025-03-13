@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from 'react';
-import FloatingParticles from './FloatingParticles';
+import GradientWave from './GradientWave';
 
 interface ParallaxBackgroundProps {
   children: React.ReactNode;
@@ -44,8 +44,8 @@ const ParallaxBackground = ({ children }: ParallaxBackgroundProps) => {
         style={{ transform: `translateY(${scrollY * 0.05}px)` }}
       />
       
-      {/* Floating particles */}
-      <FloatingParticles />
+      {/* Gradient Wave instead of Floating particles */}
+      <GradientWave scrollY={scrollY} />
       
       {/* Content */}
       {children}
