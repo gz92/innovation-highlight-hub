@@ -11,7 +11,7 @@ interface MarketAnalysisProps {
 
 export const MarketAnalysis = ({ data }: MarketAnalysisProps) => {
   // Don't render if there's no output data
-  if (!data.output) {
+  if (!data || !data.output) {
     return null;
   }
   
