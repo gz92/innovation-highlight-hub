@@ -22,6 +22,11 @@ export const MarketAnalysis = ({ data }: MarketAnalysisProps) => {
   // If there are no competitors, show a message rather than hiding the section
   const hasCompetitors = competitors.length > 0;
   
+  // Don't render the component at all if there are no competitors
+  if (!hasCompetitors) {
+    return null;
+  }
+  
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">
@@ -29,22 +34,16 @@ export const MarketAnalysis = ({ data }: MarketAnalysisProps) => {
         <h2 className="text-xl font-semibold">Market Analysis</h2>
       </div>
 
-      {!hasCompetitors ? (
-        <div className="p-6 bg-secondary/20 rounded-lg text-muted-foreground text-center">
-          No competitor data available
-        </div>
-      ) : (
-        <div className="space-y-6">
-          {competitors.map((competitor, idx) => (
-            <CardGroup key={idx}>
-              <CompetitorCard competitor={competitor} index={idx} />
-              {evaluationResults[idx] && (
-                <EvaluationCard evaluation={evaluationResults[idx]} />
-              )}
-            </CardGroup>
-          ))}
-        </div>
-      )}
+      <div className="space-y-6">
+        {competitors.map((competitor, idx) => (
+          <CardGroup key={idx}>
+            <CompetitorCard competitor={competitor} index={idx} />
+            {evaluationResults[idx] && (
+              <EvaluationCard evaluation={evaluationResults[idx]} />
+            )}
+          </CardGroup>
+        ))}
+      </div>
     </div>
   );
 };
