@@ -17,8 +17,15 @@ export function Navbar() {
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-2">
-          <Link to="/" className="text-lg font-semibold text-foreground">
-            HUN-REN Innovation Hub
+          <Link to="/" className="flex items-center gap-2">
+            <img 
+              src="/lovable-uploads/7e7cd807-d467-4e71-8464-0b050a59cf7d.png" 
+              alt="HUN-REN Logo" 
+              className="h-8"
+            />
+            <span className="text-lg font-semibold text-foreground">
+              Innovation Hub
+            </span>
           </Link>
         </div>
         
