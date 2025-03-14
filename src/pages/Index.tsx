@@ -101,7 +101,7 @@ const Index = () => {
   const sortedScenarios = [...scenarios].sort((a, b) => {
     const scoreA = calculateAverageScores(a.data.output?.evaluation_results)?.finalScore || 0;
     const scoreB = calculateAverageScores(b.data.output?.evaluation_results)?.finalScore || 0;
-    return scoreB - scoreA;
+    return scoreB - scoreA; // This ensures highest scores come first
   });
 
   return (
