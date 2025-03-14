@@ -31,7 +31,7 @@ export const IndustryPartners = ({ data }: IndustryPartnersProps) => {
     <div className="space-y-6">
       <div className="flex items-center gap-2">
         <User2 className="h-5 w-5 text-primary" />
-        <h2 className="text-xl font-semibold">Industry Target Companies</h2>
+        <h2 className="text-xl font-semibold">Potential Partner Personas</h2>
       </div>
 
       <div className="space-y-4">
