@@ -153,10 +153,17 @@ const ProjectBrowser = () => {
     fetchProjects();
   }, []);
 
-  const filteredProjects = projects.filter(project => 
-    project.data.Innovation.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    project.filename.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Fix the filter function to handle potential undefined Innovation properties
+  const filteredProjects = projects.filter(project => {
+    const innovation = project.data.Innovation || 
+                      project.data["Concise description"] || 
+                      project.data["Original wording"] || 
+                      "";
+    const filenameMatch = project.filename.toLowerCase().includes(searchTerm.toLowerCase());
+    const innovationMatch = innovation.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    return filenameMatch || innovationMatch;
+  });
 
   if (loading) {
     return (
