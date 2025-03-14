@@ -16,19 +16,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { InnovationData, Competitor, EvaluationResult } from "../types";
 import CompanyCard from "../components/CompanyCard";
 
-interface MergedCompetitorCardProps {
-  competitor: Competitor;
-  relatedEvaluation?: EvaluationResult;
-  index: number;
-}
-
-const MergedCompetitorCard = ({ competitor, relatedEvaluation, index }: MergedCompetitorCardProps) => {
-  const getScoreColor = (score: number) => {
-    if (score >= 8) return "text-green-500";
-    if (score >= 6) return "text-amber-500";
-    return "text-red-500";
-  };
-
+const CompetitorCard = ({ competitor, index }: { competitor: Competitor; index: number }) => {
   return (
     <div className="bg-card rounded-lg border border-border/40 p-5 subtle-shadow">
       <div className="flex justify-between items-start mb-4">
@@ -39,15 +27,8 @@ const MergedCompetitorCard = ({ competitor, relatedEvaluation, index }: MergedCo
             {competitor.website}
           </a>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="bg-primary/10 text-primary px-2 py-1 rounded text-xs">
-            {competitor.market_positioning.market_share}
-          </div>
-          {relatedEvaluation && (
-            <div className={`px-2 py-1 rounded text-xs font-medium ${getScoreColor(relatedEvaluation.final_score)}`}>
-              Score: {relatedEvaluation.final_score.toFixed(1)}
-            </div>
-          )}
+        <div className="bg-primary/10 text-primary px-2 py-1 rounded text-xs">
+          {competitor.market_positioning.market_share}
         </div>
       </div>
       
@@ -72,50 +53,161 @@ const MergedCompetitorCard = ({ competitor, relatedEvaluation, index }: MergedCo
         </div>
       </div>
       
-      {relatedEvaluation && (
-        <div className="mt-4 pt-4 border-t border-border/40">
-          <h4 className="text-sm font-medium mb-2">Evaluation Insights</h4>
-          <div className="grid grid-cols-3 gap-2 mb-3">
-            <div className="text-xs">
-              <span className="text-muted-foreground">Uniqueness: </span>
-              <span className="font-medium">{relatedEvaluation.uniqueness_score}</span>
-            </div>
-            <div className="text-xs">
-              <span className="text-muted-foreground">Pain Point: </span>
-              <span className="font-medium">{relatedEvaluation.pain_point_effectiveness}</span>
-            </div>
-            <div className="text-xs">
-              <span className="text-muted-foreground">Features: </span>
-              <span className="font-medium">{relatedEvaluation.feature_superiority}</span>
-            </div>
-            <div className="text-xs">
-              <span className="text-muted-foreground">Market Fit: </span>
-              <span className="font-medium">{relatedEvaluation.market_fit}</span>
-            </div>
-            <div className="text-xs">
-              <span className="text-muted-foreground">Value: </span>
-              <span className="font-medium">{relatedEvaluation.perceived_value}</span>
-            </div>
-            <div className="text-xs">
-              <span className="text-muted-foreground">Barriers: </span>
-              <span className="font-medium">{relatedEvaluation.barrier_to_entry}</span>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 mb-2">
-            <div className={`px-2 py-1 text-xs rounded-full ${
-              relatedEvaluation.status.includes('⚠️') ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400' :
-              relatedEvaluation.status.includes('✅') ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' :
-              'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
-            }`}>
-              {relatedEvaluation.status}
-            </div>
-          </div>
-        </div>
-      )}
-      
       <div className="text-xs text-muted-foreground border-t border-border/40 pt-3 mt-3">
         <p><span className="font-medium">Revenue:</span> {competitor.market_positioning.total_revenue}</p>
         <p><span className="font-medium">Patents:</span> {competitor.market_positioning.patents}</p>
+      </div>
+    </div>
+  );
+};
+
+const EvaluationCard = ({ evaluation }: { evaluation: EvaluationResult }) => {
+  const getScoreColor = (score: number) => {
+    if (score >= 8) return "text-green-500";
+    if (score >= 6) return "text-amber-500";
+    return "text-red-500";
+  };
+  
+  return (
+    <div className="bg-card rounded-lg border border-border/40 p-5 subtle-shadow">
+      <div className="flex justify-between items-start mb-4">
+        <h3 className="text-lg font-semibold">{evaluation.value_proposition}</h3>
+        <div className={`text-xl font-bold ${getScoreColor(evaluation.final_score)}`}>
+          {evaluation.final_score.toFixed(1)}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="ml-1 inline-flex">
+                  <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                </span>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs">
+                <p className="font-medium mb-1">Score Interpretation:</p>
+                <p className="text-xs mb-1">≥ 8: ✅ Strong value proposition</p>
+                <p className="text-xs mb-1">5-7: ⚠️ Needs improvement</p>
+                <p className="text-xs">{"< 5"}: ❌ Weak proposition</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+      </div>
+      
+      <div className="grid grid-cols-2 gap-x-4 gap-y-2 mb-4">
+        <div className="text-sm flex items-center">
+          <span className="text-muted-foreground">Uniqueness:</span>
+          <span className="ml-1">{evaluation.uniqueness_score}</span>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="ml-1 inline-flex">
+                  <Info className="h-3 w-3 text-muted-foreground cursor-help" />
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>How distinct is our offering from competitors?</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+        <div className="text-sm flex items-center">
+          <span className="text-muted-foreground">Pain Point:</span>
+          <span className="ml-1">{evaluation.pain_point_effectiveness}</span>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="ml-1 inline-flex">
+                  <Info className="h-3 w-3 text-muted-foreground cursor-help" />
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>Does it strongly address customer challenges?</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+        <div className="text-sm flex items-center">
+          <span className="text-muted-foreground">Features:</span>
+          <span className="ml-1">{evaluation.feature_superiority}</span>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="ml-1 inline-flex">
+                  <Info className="h-3 w-3 text-muted-foreground cursor-help" />
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>Do we offer better/more valuable features?</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+        <div className="text-sm flex items-center">
+          <span className="text-muted-foreground">Market Fit:</span>
+          <span className="ml-1">{evaluation.market_fit}</span>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="ml-1 inline-flex">
+                  <Info className="h-3 w-3 text-muted-foreground cursor-help" />
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>Does it align with industry trends and demands?</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+        <div className="text-sm flex items-center">
+          <span className="text-muted-foreground">Value:</span>
+          <span className="ml-1">{evaluation.perceived_value}</span>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="ml-1 inline-flex">
+                  <Info className="h-3 w-3 text-muted-foreground cursor-help" />
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>Would customers see it as a compelling alternative?</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+        <div className="text-sm flex items-center">
+          <span className="text-muted-foreground">Barriers:</span>
+          <span className="ml-1">{evaluation.barrier_to_entry}</span>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="ml-1 inline-flex">
+                  <Info className="h-3 w-3 text-muted-foreground cursor-help" />
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>How hard is it for competitors to replicate?</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+      </div>
+      
+      <div className="mt-4">
+        <div className="flex items-center gap-2 mb-2">
+          <div className={`px-2 py-1 text-xs rounded-full ${
+            evaluation.status.includes('⚠️') ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400' :
+            evaluation.status.includes('✅') ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' :
+            'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
+          }`}>
+            {evaluation.status}
+          </div>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="inline-flex">
+                  <Info className="h-3 w-3 text-muted-foreground cursor-help" />
+                </span>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs">
+                <p className="text-xs">Formula: Final Score = (Uniqueness + Pain Point Effectiveness + Feature Superiority + Market Fit + Perceived Value + Barrier to Entry) / 6</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+        
+        <h4 className="text-sm font-medium mb-2">Recommendations:</h4>
+        <ul className="text-sm space-y-1 list-disc list-inside">
+          {evaluation.recommendations.map((rec, i) => (
+            <li key={i}>{rec}</li>
+          ))}
+        </ul>
       </div>
     </div>
   );
@@ -211,7 +303,7 @@ const Index = () => {
   const [searchParams] = useSearchParams();
   const projectId = searchParams.get("id");
   const [project, setProject] = useState<InnovationData | null>(null);
-  const [scenarios, setScenarios] = useState<Array<{id: string, name: string, data: InnovationData, score: number}>>([]); 
+  const [scenarios, setScenarios] = useState<Array<{id: string, name: string, data: InnovationData}>>([]);
   const [loading, setLoading] = useState(true);
   const [expandedScenarios, setExpandedScenarios] = useState<{[key: string]: boolean}>({});
 
@@ -233,25 +325,20 @@ const Index = () => {
         const data = await response.json();
         setProject(data);
         
-        const extractedScenarios: Array<{id: string, name: string, data: InnovationData, score: number}> = [];
+        const extractedScenarios: Array<{id: string, name: string, data: InnovationData}> = [];
         
         const extractScenarios = (data: InnovationData) => {
-          const averageScores = calculateAverageScores(data.output.evaluation_results);
-          const score = averageScores ? averageScores.finalScore : 0;
-          
           if (data.PropID) {
             extractedScenarios.push({
               id: data.PropID.trim(),
               name: data["Idea name"] || `Scenario ${data.PropID.trim()}`,
-              data: data,
-              score: score
+              data: data
             });
           } else {
             extractedScenarios.push({
               id: "main",
               name: "Main Scenario",
-              data: data,
-              score: score
+              data: data
             });
           }
         };
@@ -261,9 +348,6 @@ const Index = () => {
         } else {
           extractScenarios(data);
         }
-        
-        // Sort scenarios by score (highest first)
-        extractedScenarios.sort((a, b) => b.score - a.score);
         
         setScenarios(extractedScenarios);
         
@@ -332,20 +416,6 @@ const Index = () => {
     ? projectId.replace('.json', '').replace(/-/g, ' ')
     : 'Project Details';
 
-  // Define card colors for differentiation
-  const cardBgColors = [
-    "bg-blue-50 dark:bg-blue-950/30", 
-    "bg-purple-50 dark:bg-purple-950/30", 
-    "bg-amber-50 dark:bg-amber-950/30", 
-    "bg-green-50 dark:bg-green-950/30", 
-    "bg-pink-50 dark:bg-pink-950/30",
-    "bg-cyan-50 dark:bg-cyan-950/30",
-    "bg-lime-50 dark:bg-lime-950/30",
-    "bg-rose-50 dark:bg-rose-950/30",
-    "bg-indigo-50 dark:bg-indigo-950/30",
-    "bg-emerald-50 dark:bg-emerald-950/30"
-  ];
-
   return (
     <div className="min-h-screen w-full">
       <div className="container max-w-4xl py-12">
@@ -364,6 +434,13 @@ const Index = () => {
           {scenarios.map((scenario, index) => {
             const averageScores = calculateAverageScores(scenario.data.output.evaluation_results);
             const isExpanded = expandedScenarios[scenario.id];
+            const cardBgColors = [
+              "bg-blue-50 dark:bg-blue-950/30", 
+              "bg-purple-50 dark:bg-purple-950/30", 
+              "bg-amber-50 dark:bg-amber-950/30", 
+              "bg-green-50 dark:bg-green-950/30", 
+              "bg-pink-50 dark:bg-pink-950/30"
+            ];
             const cardColor = cardBgColors[index % cardBgColors.length];
             
             return (
@@ -476,105 +553,35 @@ const Index = () => {
                     </div>
 
                     <div className="space-y-8">
-                      {/* Combined Competitor Analysis & Market Evaluation Section */}
-                      {(scenario.data.output.competitors && scenario.data.output.competitors.length > 0) || 
-                       (scenario.data.output.evaluation_results && scenario.data.output.evaluation_results.length > 0) ? (
+                      {scenario.data.output.competitors && scenario.data.output.competitors.length > 0 && (
                         <div className="space-y-6">
                           <div className="flex items-center gap-2">
                             <Target className="h-5 w-5 text-primary" />
-                            <h2 className="text-xl font-semibold">Market & Competition Analysis</h2>
+                            <h2 className="text-xl font-semibold">Competitor Analysis</h2>
                           </div>
 
                           <div className="space-y-6">
-                            {/* Merge competitor info with evaluations if available */}
-                            {scenario.data.output.competitors && scenario.data.output.competitors.map((competitor, idx) => {
-                              // Find a matching evaluation if any
-                              const matchingEvaluation = scenario.data.output.evaluation_results?.find(
-                                evaluation => evaluation.value_proposition.toLowerCase().includes(competitor.name.toLowerCase())
-                              );
-                              
-                              return (
-                                <MergedCompetitorCard 
-                                  key={idx} 
-                                  competitor={competitor} 
-                                  relatedEvaluation={matchingEvaluation}
-                                  index={idx} 
-                                />
-                              );
-                            })}
-                            
-                            {/* Show any remaining evaluations that weren't matched with competitors */}
-                            {scenario.data.output.evaluation_results && 
-                             scenario.data.output.evaluation_results
-                              .filter(evaluation => 
-                                !scenario.data.output.competitors?.some(comp => 
-                                  evaluation.value_proposition.toLowerCase().includes(comp.name.toLowerCase())
-                                )
-                              )
-                              .map((evaluation, idx) => (
-                                <div key={idx} className="bg-card rounded-lg border border-border/40 p-5 subtle-shadow">
-                                  <div className="flex justify-between items-start mb-4">
-                                    <h3 className="text-lg font-semibold">{evaluation.value_proposition}</h3>
-                                    <div className={`text-xl font-bold ${
-                                      evaluation.final_score >= 8 ? "text-green-500" :
-                                      evaluation.final_score >= 6 ? "text-amber-500" :
-                                      "text-red-500"
-                                    }`}>
-                                      {evaluation.final_score.toFixed(1)}
-                                    </div>
-                                  </div>
-                                  
-                                  <div className="grid grid-cols-3 gap-2 mb-4 mt-4">
-                                    <div className="text-sm">
-                                      <span className="text-muted-foreground">Uniqueness: </span>
-                                      <span className="font-medium">{evaluation.uniqueness_score}</span>
-                                    </div>
-                                    <div className="text-sm">
-                                      <span className="text-muted-foreground">Pain Point: </span>
-                                      <span className="font-medium">{evaluation.pain_point_effectiveness}</span>
-                                    </div>
-                                    <div className="text-sm">
-                                      <span className="text-muted-foreground">Features: </span>
-                                      <span className="font-medium">{evaluation.feature_superiority}</span>
-                                    </div>
-                                    <div className="text-sm">
-                                      <span className="text-muted-foreground">Market Fit: </span>
-                                      <span className="font-medium">{evaluation.market_fit}</span>
-                                    </div>
-                                    <div className="text-sm">
-                                      <span className="text-muted-foreground">Value: </span>
-                                      <span className="font-medium">{evaluation.perceived_value}</span>
-                                    </div>
-                                    <div className="text-sm">
-                                      <span className="text-muted-foreground">Barriers: </span>
-                                      <span className="font-medium">{evaluation.barrier_to_entry}</span>
-                                    </div>
-                                  </div>
-                                  
-                                  <div className="flex items-center gap-2 mb-2">
-                                    <div className={`px-2 py-1 text-xs rounded-full ${
-                                      evaluation.status.includes('⚠️') ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400' :
-                                      evaluation.status.includes('✅') ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' :
-                                      'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
-                                    }`}>
-                                      {evaluation.status}
-                                    </div>
-                                  </div>
-                                  
-                                  <div className="mt-4">
-                                    <h4 className="text-sm font-medium mb-2">Recommendations:</h4>
-                                    <ul className="text-sm space-y-1 list-disc list-inside">
-                                      {evaluation.recommendations.map((rec, i) => (
-                                        <li key={i}>{rec}</li>
-                                      ))}
-                                    </ul>
-                                  </div>
-                                </div>
-                              ))
-                            }
+                            {scenario.data.output.competitors.map((competitor, index) => (
+                              <CompetitorCard key={index} competitor={competitor} index={index} />
+                            ))}
                           </div>
                         </div>
-                      ) : null}
+                      )}
+                      
+                      {scenario.data.output.evaluation_results && scenario.data.output.evaluation_results.length > 0 && (
+                        <div className="space-y-6">
+                          <div className="flex items-center gap-2">
+                            <BarChart className="h-5 w-5 text-primary" />
+                            <h2 className="text-xl font-semibold">Market Evaluation</h2>
+                          </div>
+
+                          <div className="space-y-6">
+                            {scenario.data.output.evaluation_results.map((evaluation, index) => (
+                              <EvaluationCard key={index} evaluation={evaluation} />
+                            ))}
+                          </div>
+                        </div>
+                      )}
                       
                       {scenario.data.output.persona_companies && scenario.data.output.persona_companies.length > 0 && (
                         <div className="space-y-6">
