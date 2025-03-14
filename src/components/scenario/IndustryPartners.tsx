@@ -24,7 +24,7 @@ export const IndustryPartners = ({ data }: IndustryPartnersProps) => {
 
       <div className="space-y-4">
         {companies.map((company, index) => (
-          <CompanyCard key={index} company={company} />
+          <CompanyCard key={index} company={company} index={index} />
         ))}
       </div>
     </div>
