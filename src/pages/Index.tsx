@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { toast } from "sonner";
@@ -234,14 +235,14 @@ const calculateAverageScores = (evaluationResults: EvaluationResult[] | undefine
     finalScore: 0
   };
   
-  evaluationResults.forEach(eval => {
-    totals.uniqueness += eval.uniqueness_score;
-    totals.painPoint += eval.pain_point_effectiveness;
-    totals.features += eval.feature_superiority;
-    totals.marketFit += eval.market_fit;
-    totals.value += eval.perceived_value;
-    totals.barriers += eval.barrier_to_entry;
-    totals.finalScore += eval.final_score;
+  evaluationResults.forEach(evaluation => {
+    totals.uniqueness += evaluation.uniqueness_score;
+    totals.painPoint += evaluation.pain_point_effectiveness;
+    totals.features += evaluation.feature_superiority;
+    totals.marketFit += evaluation.market_fit;
+    totals.value += evaluation.perceived_value;
+    totals.barriers += evaluation.barrier_to_entry;
+    totals.finalScore += evaluation.final_score;
   });
   
   const count = evaluationResults.length;
