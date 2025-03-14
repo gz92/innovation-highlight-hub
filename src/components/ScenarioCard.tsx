@@ -24,6 +24,17 @@ interface ScenarioCardProps {
 }
 
 const ScenarioCard = ({ scenario, index, expanded, toggleScenario, averageScores }: ScenarioCardProps) => {
+  // Log scenario data to debug
+  console.log(`ScenarioCard ${index} - scenario data:`, scenario.data);
+  console.log(`ScenarioCard ${index} - has competitors:`, 
+    scenario.data?.output?.competitors ? 
+    `Yes (${scenario.data.output.competitors.length})` : 
+    "No");
+  console.log(`ScenarioCard ${index} - has persona_companies:`, 
+    scenario.data?.output?.persona_companies ? 
+    `Yes (${scenario.data.output.persona_companies.length})` : 
+    "No");
+  
   // Use score-based background color instead of index-based colors
   const cardColor = averageScores ? getCardBackgroundColor(averageScores.finalScore) : "";
   

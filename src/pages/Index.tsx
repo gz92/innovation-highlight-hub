@@ -34,6 +34,7 @@ const Index = () => {
         }
         
         const data = await response.json();
+        console.log("Fetched raw data:", data);
         setProject(data);
         
         const extractedScenarios: Array<{id: string, name: string, data: InnovationData}> = [];
@@ -46,10 +47,13 @@ const Index = () => {
           
           // Only add scenarios with proper PropID and valid data
           if (data.PropID && data.output) {
+            // Deep clone the data to avoid reference issues
+            const scenarioData = JSON.parse(JSON.stringify(data));
+            
             extractedScenarios.push({
               id: data.PropID.trim(),
               name: data["Idea name"] || `Scenario ${data.PropID.trim()}`,
-              data: data
+              data: scenarioData
             });
           }
         };
@@ -65,13 +69,22 @@ const Index = () => {
           extractScenarios(data);
         }
         
+        // Debug logging
         console.log("Extracted scenarios:", extractedScenarios);
+        extractedScenarios.forEach((scenario, index) => {
+          console.log(`Scenario ${index} (${scenario.id}):`, scenario.data);
+          console.log(`Scenario ${index} has competitors:`, 
+            scenario.data?.output?.competitors ? 
+            `Yes (${scenario.data.output.competitors.length})` : 
+            "No");
+        });
         
         setScenarios(extractedScenarios);
         
+        // Initialize all scenarios as expanded for debugging
         const initialExpandState: {[key: string]: boolean} = {};
         extractedScenarios.forEach(scenario => {
-          initialExpandState[scenario.id] = false;
+          initialExpandState[scenario.id] = true; // Set all to expanded initially for debugging
         });
         setExpandedScenarios(initialExpandState);
       } catch (err) {
@@ -115,7 +128,9 @@ const Index = () => {
 
   console.log("Sorted scenarios:", sortedScenarios.map(s => ({
     name: s.name,
-    score: calculateAverageScores(s.data.output?.evaluation_results)?.finalScore || 0
+    score: calculateAverageScores(s.data.output?.evaluation_results)?.finalScore || 0,
+    hasCompetitors: s.data.output?.competitors?.length > 0,
+    competitorsCount: s.data.output?.competitors?.length || 0
   })));
 
   return (

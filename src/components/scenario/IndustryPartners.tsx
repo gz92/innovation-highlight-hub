@@ -8,15 +8,22 @@ interface IndustryPartnersProps {
 }
 
 export const IndustryPartners = ({ data }: IndustryPartnersProps) => {
+  // Debug logging
+  console.log("IndustryPartners - received data:", data);
+  console.log("IndustryPartners - persona_companies:", data?.output?.persona_companies);
+  
   // Check for valid output and persona_companies
   if (!data || !data.output || !data.output.persona_companies) {
+    console.log("IndustryPartners - no valid persona_companies data");
     return null;
   }
   
   const companies = data.output.persona_companies;
+  console.log("IndustryPartners - companies length:", companies.length);
   
   // If there are no companies, don't render this component
   if (companies.length === 0) {
+    console.log("IndustryPartners - no companies available");
     return null;
   }
   

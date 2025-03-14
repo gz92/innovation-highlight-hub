@@ -10,8 +10,13 @@ interface MarketAnalysisProps {
 }
 
 export const MarketAnalysis = ({ data }: MarketAnalysisProps) => {
+  // Debug logging
+  console.log("MarketAnalysis - received data:", data);
+  console.log("MarketAnalysis - competitors:", data?.output?.competitors);
+  
   // Don't render if there's no output data
   if (!data || !data.output) {
+    console.log("MarketAnalysis - no output data available");
     return null;
   }
   
@@ -19,11 +24,11 @@ export const MarketAnalysis = ({ data }: MarketAnalysisProps) => {
   const competitors = data.output.competitors || [];
   const evaluationResults = data.output.evaluation_results || [];
   
-  // If there are no competitors, show a message rather than hiding the section
-  const hasCompetitors = competitors.length > 0;
+  console.log("MarketAnalysis - competitors length:", competitors.length);
   
-  // Don't render the component at all if there are no competitors
-  if (!hasCompetitors) {
+  // If there are no competitors, don't render the component
+  if (competitors.length === 0) {
+    console.log("MarketAnalysis - no competitors available");
     return null;
   }
   
