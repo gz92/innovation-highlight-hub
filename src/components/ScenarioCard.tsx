@@ -9,6 +9,7 @@ import { ScenarioDescription } from "./scenario/ScenarioDescription";
 import { MarketAnalysis } from "./scenario/MarketAnalysis";
 import { IndustryPartners } from "./scenario/IndustryPartners";
 import { calculateAverageScores } from "../utils/scoreCalculations";
+import { ScoreWithTooltip, getCardBackgroundColor } from "./ratings/ScoreWithTooltip";
 
 interface ScenarioCardProps {
   scenario: {
@@ -23,14 +24,8 @@ interface ScenarioCardProps {
 }
 
 const ScenarioCard = ({ scenario, index, expanded, toggleScenario, averageScores }: ScenarioCardProps) => {
-  const cardBgColors = [
-    "bg-blue-50 dark:bg-blue-950/30", 
-    "bg-purple-50 dark:bg-purple-950/30", 
-    "bg-amber-50 dark:bg-amber-950/30", 
-    "bg-green-50 dark:bg-green-950/30", 
-    "bg-pink-50 dark:bg-pink-950/30"
-  ];
-  const cardColor = cardBgColors[index % cardBgColors.length];
+  // Use score-based background color instead of index-based colors
+  const cardColor = averageScores ? getCardBackgroundColor(averageScores.finalScore) : "";
   
   return (
     <Card 
@@ -47,13 +42,10 @@ const ScenarioCard = ({ scenario, index, expanded, toggleScenario, averageScores
           </CardTitle>
           <div className="flex items-center gap-2">
             {averageScores && (
-              <span className={`text-sm font-medium ${
-                averageScores.finalScore >= 8 ? 'text-green-600 dark:text-green-400' :
-                averageScores.finalScore >= 6 ? 'text-amber-600 dark:text-amber-400' :
-                'text-red-600 dark:text-red-400'
-              }`}>
-                Score: {averageScores.finalScore}
-              </span>
+              <ScoreWithTooltip 
+                score={averageScores.finalScore}
+                label={`Overall score: ${averageScores.finalScore}/10`}
+              />
             )}
             <Button 
               variant="ghost" 

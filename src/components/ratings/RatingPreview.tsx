@@ -22,7 +22,10 @@ export const RatingPreview = ({ scores }: RatingPreviewProps) => {
     <div className="mt-3 pt-3 border-t border-border/40">
       <div className="flex justify-between mb-1">
         <span className="text-xs font-medium text-muted-foreground">Total Score:</span>
-        <ScoreWithTooltip score={scores.finalScore} />
+        <ScoreWithTooltip 
+          score={scores.finalScore} 
+          label={`Final Score: ${scores.finalScore}/10`}
+        />
       </div>
       <div className="w-full bg-secondary/30 rounded-full h-1.5">
         <div 
