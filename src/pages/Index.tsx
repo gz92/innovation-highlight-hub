@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { toast } from "sonner";
@@ -364,23 +363,6 @@ const Index = () => {
                   </div>
 
                   <div className="space-y-8">
-                    {/* Evaluation Results - Now first */}
-                    {scenario.data.output.evaluation_results && scenario.data.output.evaluation_results.length > 0 && (
-                      <div className="space-y-6 mt-10">
-                        <div className="flex items-center gap-2">
-                          <BarChart className="h-5 w-5 text-primary" />
-                          <h2 className="text-xl font-semibold">Market Evaluation</h2>
-                        </div>
-
-                        <div className="space-y-6">
-                          {scenario.data.output.evaluation_results.map((evaluation, index) => (
-                            <EvaluationCard key={index} evaluation={evaluation} />
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    
-                    {/* Competitor Analysis - Now second */}
                     {scenario.data.output.competitors && scenario.data.output.competitors.length > 0 && (
                       <div className="space-y-6 mt-10">
                         <div className="flex items-center gap-2">
@@ -396,7 +378,21 @@ const Index = () => {
                       </div>
                     )}
                     
-                    {/* Partner Personas - Now third with updated title */}
+                    {scenario.data.output.evaluation_results && scenario.data.output.evaluation_results.length > 0 && (
+                      <div className="space-y-6 mt-10">
+                        <div className="flex items-center gap-2">
+                          <BarChart className="h-5 w-5 text-primary" />
+                          <h2 className="text-xl font-semibold">Market Evaluation</h2>
+                        </div>
+
+                        <div className="space-y-6">
+                          {scenario.data.output.evaluation_results.map((evaluation, index) => (
+                            <EvaluationCard key={index} evaluation={evaluation} />
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
                     {scenario.data.output.persona_companies && scenario.data.output.persona_companies.length > 0 && (
                       <div className="space-y-6 mt-10">
                         <div className="flex items-center gap-2">
