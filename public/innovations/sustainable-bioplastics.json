@@ -19,6 +19,51 @@
         "relevance_indicators": "Corporate sustainability commitments with specific plastic reduction targets, R&D investments in alternative materials, and sustainability-focused marketing campaigns.",
         "company_research_focus": "Analyze their current sustainability roadmap, existing partnerships with material suppliers, and specific performance requirements for packaging applications."
       }
+    ],
+    "competitors": [
+      {
+        "name": "BioCorp Materials",
+        "website": "www.biocorpmaterials.com",
+        "brief_value_proposition": "Develops bioplastics from corn starch and sugar cane with comparable durability to conventional plastics.",
+        "market_positioning": {
+          "market_share": "14% of sustainable plastics market",
+          "total_revenue": "$45M annually",
+          "funding_status": "Series C completed",
+          "patents": 12,
+          "key_innovations": ["Starch-based polymer blends", "Industrial composting certification"]
+        },
+        "comparison_vs_our_value_prop": {
+          "competitor_strengths": [
+            "Established distribution network",
+            "Large-scale production capacity",
+            "FDA food contact approval"
+          ],
+          "gaps_in_their_offering": [
+            "Higher raw material costs (food-based sources)",
+            "Limited end-of-life options",
+            "Less carbon-neutral production process"
+          ]
+        },
+        "relevance_explanation": "Direct competitor in biodegradable packaging segment targeting similar consumer goods companies."
+      }
+    ],
+    "evaluation_results": [
+      {
+        "value_proposition": "Agricultural waste-based bioplastics offer a sustainable, cost-effective alternative with improved end-of-life biodegradability.",
+        "uniqueness_score": 8.5,
+        "pain_point_effectiveness": 7.8,
+        "feature_superiority": 8.2,
+        "market_fit": 8.7,
+        "perceived_value": 7.9,
+        "barrier_to_entry": 6.5,
+        "final_score": 7.9,
+        "status": "Validated",
+        "recommendations": [
+          "Focus on cost parity with conventional plastics to accelerate adoption",
+          "Develop partnerships with waste management companies to secure feedstock supply",
+          "Pursue certifications for home compostability to differentiate from competitors"
+        ]
+      }
     ]
   }
 }
