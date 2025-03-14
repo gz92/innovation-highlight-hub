@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { toast } from "sonner";
@@ -213,7 +212,6 @@ const EvaluationCard = ({ evaluation }: { evaluation: EvaluationResult }) => {
   );
 };
 
-// Helper function to calculate average scores from evaluation results
 const calculateAverageScores = (evaluationResults: EvaluationResult[] | undefined) => {
   if (!evaluationResults || evaluationResults.length === 0) {
     return null;
@@ -252,7 +250,6 @@ const calculateAverageScores = (evaluationResults: EvaluationResult[] | undefine
   };
 };
 
-// Component to display ratings in the preview card
 const RatingPreview = ({ scores }: { scores: ReturnType<typeof calculateAverageScores> }) => {
   if (!scores) return null;
   
@@ -351,7 +348,6 @@ const Index = () => {
         
         setScenarios(extractedScenarios);
         
-        // Initialize all scenarios as collapsed
         const initialExpandState: {[key: string]: boolean} = {};
         extractedScenarios.forEach(scenario => {
           initialExpandState[scenario.id] = false;
@@ -553,31 +549,23 @@ const Index = () => {
                     </div>
 
                     <div className="space-y-8">
-                      {scenario.data.output.competitors && scenario.data.output.competitors.length > 0 && (
+                      {scenario.data.output.competitors && 
+                       scenario.data.output.competitors.length > 0 && 
+                       scenario.data.output.evaluation_results && (
                         <div className="space-y-6">
                           <div className="flex items-center gap-2">
                             <Target className="h-5 w-5 text-primary" />
-                            <h2 className="text-xl font-semibold">Competitor Analysis</h2>
+                            <h2 className="text-xl font-semibold">Market Analysis</h2>
                           </div>
 
                           <div className="space-y-6">
-                            {scenario.data.output.competitors.map((competitor, index) => (
-                              <CompetitorCard key={index} competitor={competitor} index={index} />
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                      
-                      {scenario.data.output.evaluation_results && scenario.data.output.evaluation_results.length > 0 && (
-                        <div className="space-y-6">
-                          <div className="flex items-center gap-2">
-                            <BarChart className="h-5 w-5 text-primary" />
-                            <h2 className="text-xl font-semibold">Market Evaluation</h2>
-                          </div>
-
-                          <div className="space-y-6">
-                            {scenario.data.output.evaluation_results.map((evaluation, index) => (
-                              <EvaluationCard key={index} evaluation={evaluation} />
+                            {scenario.data.output.competitors.map((competitor, idx) => (
+                              <div key={idx} className="space-y-6">
+                                <CompetitorCard competitor={competitor} index={idx} />
+                                {scenario.data.output.evaluation_results[idx] && (
+                                  <EvaluationCard evaluation={scenario.data.output.evaluation_results[idx]} />
+                                )}
+                              </div>
                             ))}
                           </div>
                         </div>
@@ -610,3 +598,4 @@ const Index = () => {
 };
 
 export default Index;
+
