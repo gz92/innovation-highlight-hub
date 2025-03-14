@@ -2,9 +2,15 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { toast } from "sonner";
-import { ArrowLeft, Building2, BarChart, Target } from "lucide-react";
+import { ArrowLeft, Building2, BarChart, Target, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { 
+  Tooltip, 
+  TooltipContent, 
+  TooltipProvider, 
+  TooltipTrigger 
+} from "@/components/ui/tooltip";
 import { InnovationData, Competitor, EvaluationResult } from "../types";
 import CompanyCard from "../components/CompanyCard";
 
@@ -69,27 +75,108 @@ const EvaluationCard = ({ evaluation }: { evaluation: EvaluationResult }) => {
         <h3 className="text-lg font-semibold">{evaluation.value_proposition}</h3>
         <div className={`text-xl font-bold ${getScoreColor(evaluation.final_score)}`}>
           {evaluation.final_score.toFixed(1)}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="ml-1 inline-flex">
+                  <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                </span>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs">
+                <p className="font-medium mb-1">Score Interpretation:</p>
+                <p className="text-xs mb-1">≥ 8: ✅ Strong value proposition</p>
+                <p className="text-xs mb-1">5-7: ⚠️ Needs improvement</p>
+                <p className="text-xs">{"< 5"}: ❌ Weak proposition</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       </div>
       
       <div className="grid grid-cols-2 gap-x-4 gap-y-2 mb-4">
-        <div className="text-sm">
-          <span className="text-muted-foreground">Uniqueness:</span> {evaluation.uniqueness_score}
+        <div className="text-sm flex items-center">
+          <span className="text-muted-foreground">Uniqueness:</span>
+          <span className="ml-1">{evaluation.uniqueness_score}</span>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="ml-1 inline-flex">
+                  <Info className="h-3 w-3 text-muted-foreground cursor-help" />
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>How distinct is our offering from competitors?</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
-        <div className="text-sm">
-          <span className="text-muted-foreground">Pain Point:</span> {evaluation.pain_point_effectiveness}
+        <div className="text-sm flex items-center">
+          <span className="text-muted-foreground">Pain Point:</span>
+          <span className="ml-1">{evaluation.pain_point_effectiveness}</span>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="ml-1 inline-flex">
+                  <Info className="h-3 w-3 text-muted-foreground cursor-help" />
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>Does it strongly address customer challenges?</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
-        <div className="text-sm">
-          <span className="text-muted-foreground">Features:</span> {evaluation.feature_superiority}
+        <div className="text-sm flex items-center">
+          <span className="text-muted-foreground">Features:</span>
+          <span className="ml-1">{evaluation.feature_superiority}</span>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="ml-1 inline-flex">
+                  <Info className="h-3 w-3 text-muted-foreground cursor-help" />
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>Do we offer better/more valuable features?</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
-        <div className="text-sm">
-          <span className="text-muted-foreground">Market Fit:</span> {evaluation.market_fit}
+        <div className="text-sm flex items-center">
+          <span className="text-muted-foreground">Market Fit:</span>
+          <span className="ml-1">{evaluation.market_fit}</span>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="ml-1 inline-flex">
+                  <Info className="h-3 w-3 text-muted-foreground cursor-help" />
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>Does it align with industry trends and demands?</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
-        <div className="text-sm">
-          <span className="text-muted-foreground">Value:</span> {evaluation.perceived_value}
+        <div className="text-sm flex items-center">
+          <span className="text-muted-foreground">Value:</span>
+          <span className="ml-1">{evaluation.perceived_value}</span>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="ml-1 inline-flex">
+                  <Info className="h-3 w-3 text-muted-foreground cursor-help" />
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>Would customers see it as a compelling alternative?</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
-        <div className="text-sm">
-          <span className="text-muted-foreground">Barriers:</span> {evaluation.barrier_to_entry}
+        <div className="text-sm flex items-center">
+          <span className="text-muted-foreground">Barriers:</span>
+          <span className="ml-1">{evaluation.barrier_to_entry}</span>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="ml-1 inline-flex">
+                  <Info className="h-3 w-3 text-muted-foreground cursor-help" />
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>How hard is it for competitors to replicate?</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       </div>
       
@@ -102,6 +189,18 @@ const EvaluationCard = ({ evaluation }: { evaluation: EvaluationResult }) => {
           }`}>
             {evaluation.status}
           </div>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="inline-flex">
+                  <Info className="h-3 w-3 text-muted-foreground cursor-help" />
+                </span>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs">
+                <p className="text-xs">Formula: Final Score = (Uniqueness + Pain Point Effectiveness + Feature Superiority + Market Fit + Perceived Value + Barrier to Entry) / 6</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
         
         <h4 className="text-sm font-medium mb-2">Recommendations:</h4>
