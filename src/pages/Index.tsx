@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { toast } from "sonner";
@@ -20,7 +19,6 @@ import {
 import { InnovationData, Competitor, EvaluationResult } from "../types";
 import CompanyCard from "../components/CompanyCard";
 
-// Component to display competitor information
 const CompetitorCard = ({ competitor, index }: { competitor: Competitor; index: number }) => {
   return (
     <div className="bg-card rounded-lg border border-border/40 p-5 subtle-shadow">
@@ -66,9 +64,7 @@ const CompetitorCard = ({ competitor, index }: { competitor: Competitor; index: 
   );
 };
 
-// Component to display evaluation results
 const EvaluationCard = ({ evaluation }: { evaluation: EvaluationResult }) => {
-  // Color based on final score
   const getScoreColor = (score: number) => {
     if (score >= 8) return "text-green-500";
     if (score >= 6) return "text-amber-500";
@@ -245,19 +241,15 @@ const Index = () => {
         const data = await response.json();
         setProject(data);
         
-        // Extract scenarios based on PropID
         const extractedScenarios: Array<{id: string, data: InnovationData}> = [];
         
-        // Function to extract scenarios from the data
         const extractScenarios = (data: InnovationData) => {
-          // If it has a PropID, it's a scenario
           if (data.PropID) {
             extractedScenarios.push({
               id: data.PropID.trim(),
               data: data
             });
           } else {
-            // Main project data (without PropID) also gets added as a scenario
             extractedScenarios.push({
               id: "main",
               data: data
@@ -265,7 +257,6 @@ const Index = () => {
           }
         };
         
-        // Handle if data is an array
         if (Array.isArray(data)) {
           data.forEach(item => extractScenarios(item));
         } else {
@@ -354,17 +345,15 @@ const Index = () => {
               <AccordionContent className="px-0">
                 <div className="p-6 pt-2 space-y-10">
                   <div className="bg-card rounded-xl border border-border/40 subtle-shadow p-6">
-                    {/* Marketing version block */}
                     {(scenario.data["Marketing version"] || scenario.data.Marketing_version) && (
-                      <div className="mb-4 p-3 bg-primary/5 rounded-lg border border-primary/20">
-                        <p className="text-lg italic text-primary-foreground">
+                      <div className="mb-4 p-4 bg-primary/10 rounded-lg border border-primary/30">
+                        <p className="text-lg font-medium text-foreground dark:text-white">
                           {scenario.data["Marketing version"] || scenario.data.Marketing_version}
                         </p>
                       </div>
                     )}
                     
-                    {/* Description block */}
-                    <p className="text-lg leading-relaxed text-pretty">
+                    <p className="text-lg leading-relaxed text-pretty text-foreground dark:text-white font-medium">
                       {scenario.data.Innovation || 
                        scenario.data["Concise description"] || 
                        scenario.data["Original wording"] || 
@@ -374,7 +363,6 @@ const Index = () => {
                   </div>
 
                   <div className="space-y-8">
-                    {/* Company Personas */}
                     {scenario.data.output.persona_companies && scenario.data.output.persona_companies.length > 0 && (
                       <div className="space-y-6">
                         <div className="flex items-center gap-2">
@@ -390,7 +378,6 @@ const Index = () => {
                       </div>
                     )}
                     
-                    {/* Competitor Analysis */}
                     {scenario.data.output.competitors && scenario.data.output.competitors.length > 0 && (
                       <div className="space-y-6 mt-10">
                         <div className="flex items-center gap-2">
@@ -406,7 +393,6 @@ const Index = () => {
                       </div>
                     )}
                     
-                    {/* Evaluation Results */}
                     {scenario.data.output.evaluation_results && scenario.data.output.evaluation_results.length > 0 && (
                       <div className="space-y-6 mt-10">
                         <div className="flex items-center gap-2">
