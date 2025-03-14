@@ -12,6 +12,39 @@ import { useIntersectionObserver } from "../utils/animations";
 const ProjectCard = ({ project, index, filename }: { project: InnovationData; index: number; filename: string }) => {
   const { ref, isIntersecting } = useIntersectionObserver();
   
+  // Extract description from either format
+  const getDescription = (project: InnovationData) => {
+    return project.Innovation || 
+           project["Concise description"] || 
+           project["Original wording"] || 
+           "No description available";
+  };
+  
+  // Extract title from filename
+  const title = filename.replace('.json', '').replace(/-/g, ' ');
+  
+  // Get description for display
+  const description = getDescription(project);
+  
+  // Get industry tags if available
+  const getTags = (project: InnovationData) => {
+    if (project.output.persona_companies && project.output.persona_companies.length > 0) {
+      const filterText = project.output.persona_companies[0].apollo_filter;
+      if (filterText) {
+        const industrySection = filterText.split(';')[0];
+        if (industrySection) {
+          const industries = industrySection.split(':')[1];
+          if (industries) {
+            return industries.split(',').slice(0, 2).map(tag => tag.replace(/['"]/g, '').trim());
+          }
+        }
+      }
+    }
+    return [];
+  };
+  
+  const tags = getTags(project);
+  
   return (
     <div 
       ref={ref}
@@ -24,23 +57,23 @@ const ProjectCard = ({ project, index, filename }: { project: InnovationData; in
     >
       <div className="h-40 bg-gradient-to-r from-primary/20 to-primary/5 flex items-center justify-center">
         <div className="text-4xl font-bold text-primary/40">
-          {project.Innovation.substring(0, 1)}
+          {title.substring(0, 1).toUpperCase()}
         </div>
       </div>
       
       <div className="p-5">
-        <h3 className="text-xl font-semibold line-clamp-2 mb-2">
-          {filename.replace('.json', '').replace(/-/g, ' ')}
+        <h3 className="text-xl font-semibold line-clamp-2 mb-2 capitalize">
+          {title}
         </h3>
         
         <p className="text-muted-foreground text-sm line-clamp-3 mb-4">
-          {project.Innovation}
+          {description}
         </p>
         
         <div className="flex flex-wrap gap-2 mb-4">
-          {project.output.persona_companies[0].apollo_filter.split(';')[0].split(':')[1].split(',').slice(0, 2).map((tag, i) => (
+          {tags.map((tag, i) => (
             <span key={i} className="text-xs px-2.5 py-1 rounded-full bg-secondary text-secondary-foreground">
-              {tag.replace(/['"]/g, '').trim()}
+              {tag}
             </span>
           ))}
         </div>

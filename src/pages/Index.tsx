@@ -1,11 +1,119 @@
+
 import { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { toast } from "sonner";
-import { ArrowLeft, Building2 } from "lucide-react";
+import { ArrowLeft, Building2, BarChart, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { InnovationData } from "../types";
+import { InnovationData, Competitor, EvaluationResult } from "../types";
 import CompanyCard from "../components/CompanyCard";
+
+// Component to display competitor information
+const CompetitorCard = ({ competitor, index }: { competitor: Competitor; index: number }) => {
+  return (
+    <div className="bg-card rounded-lg border border-border/40 p-5 subtle-shadow">
+      <div className="flex justify-between items-start mb-4">
+        <div>
+          <h3 className="text-lg font-semibold">{competitor.name}</h3>
+          <a href={competitor.website} target="_blank" rel="noopener noreferrer" 
+            className="text-sm text-primary hover:underline">
+            {competitor.website}
+          </a>
+        </div>
+        <div className="bg-primary/10 text-primary px-2 py-1 rounded text-xs">
+          {competitor.market_positioning.market_share}
+        </div>
+      </div>
+      
+      <p className="text-sm text-muted-foreground mb-4">{competitor.brief_value_proposition}</p>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div>
+          <h4 className="text-sm font-medium mb-2">Strengths</h4>
+          <ul className="text-sm space-y-1 list-disc list-inside">
+            {competitor.comparison_vs_our_value_prop.competitor_strengths.map((strength, i) => (
+              <li key={i}>{strength}</li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <h4 className="text-sm font-medium mb-2">Gaps</h4>
+          <ul className="text-sm space-y-1 list-disc list-inside">
+            {competitor.comparison_vs_our_value_prop.gaps_in_their_offering.map((gap, i) => (
+              <li key={i}>{gap}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+      
+      <div className="text-xs text-muted-foreground border-t border-border/40 pt-3 mt-3">
+        <p><span className="font-medium">Revenue:</span> {competitor.market_positioning.total_revenue}</p>
+        <p><span className="font-medium">Patents:</span> {competitor.market_positioning.patents}</p>
+      </div>
+    </div>
+  );
+};
+
+// Component to display evaluation results
+const EvaluationCard = ({ evaluation }: { evaluation: EvaluationResult }) => {
+  // Color based on final score
+  const getScoreColor = (score: number) => {
+    if (score >= 8) return "text-green-500";
+    if (score >= 6) return "text-amber-500";
+    return "text-red-500";
+  };
+  
+  return (
+    <div className="bg-card rounded-lg border border-border/40 p-5 subtle-shadow">
+      <div className="flex justify-between items-start mb-4">
+        <h3 className="text-lg font-semibold">{evaluation.value_proposition}</h3>
+        <div className={`text-xl font-bold ${getScoreColor(evaluation.final_score)}`}>
+          {evaluation.final_score.toFixed(1)}
+        </div>
+      </div>
+      
+      <div className="grid grid-cols-2 gap-x-4 gap-y-2 mb-4">
+        <div className="text-sm">
+          <span className="text-muted-foreground">Uniqueness:</span> {evaluation.uniqueness_score}
+        </div>
+        <div className="text-sm">
+          <span className="text-muted-foreground">Pain Point:</span> {evaluation.pain_point_effectiveness}
+        </div>
+        <div className="text-sm">
+          <span className="text-muted-foreground">Features:</span> {evaluation.feature_superiority}
+        </div>
+        <div className="text-sm">
+          <span className="text-muted-foreground">Market Fit:</span> {evaluation.market_fit}
+        </div>
+        <div className="text-sm">
+          <span className="text-muted-foreground">Value:</span> {evaluation.perceived_value}
+        </div>
+        <div className="text-sm">
+          <span className="text-muted-foreground">Barriers:</span> {evaluation.barrier_to_entry}
+        </div>
+      </div>
+      
+      <div className="mt-4">
+        <div className="flex items-center gap-2 mb-2">
+          <div className={`px-2 py-1 text-xs rounded-full ${
+            evaluation.status.includes('⚠️') ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400' :
+            evaluation.status.includes('✅') ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' :
+            'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
+          }`}>
+            {evaluation.status}
+          </div>
+        </div>
+        
+        <h4 className="text-sm font-medium mb-2">Recommendations:</h4>
+        <ul className="text-sm space-y-1 list-disc list-inside">
+          {evaluation.recommendations.map((rec, i) => (
+            <li key={i}>{rec}</li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+};
 
 const Index = () => {
   const [searchParams] = useSearchParams();
@@ -78,9 +186,26 @@ const Index = () => {
     );
   }
 
+  // Handle both new and old format
+  const getDescription = () => {
+    return project.Innovation || 
+           project["Concise description"] || 
+           project["Original wording"] || 
+           "No description available";
+  };
+
   const title = projectId
     ? projectId.replace('.json', '').replace(/-/g, ' ')
     : 'Project Details';
+
+  const hasCompetitors = project.output.competitors && project.output.competitors.length > 0;
+  const hasEvaluations = project.output.evaluation_results && project.output.evaluation_results.length > 0;
+  
+  // Get appropriate description based on the available fields
+  const description = getDescription();
+  
+  // Get the marketing version if available
+  const marketingVersion = project["Marketing version"] || null;
 
   return (
     <div className="min-h-screen w-full">
@@ -97,22 +222,62 @@ const Index = () => {
         </h1>
 
         <div className="bg-card rounded-xl p-6 border border-border/40 mb-10 subtle-shadow">
+          {marketingVersion && (
+            <div className="mb-4 p-3 bg-primary/5 rounded-lg border border-primary/20">
+              <p className="text-lg italic text-primary-foreground">{marketingVersion}</p>
+            </div>
+          )}
           <p className="text-lg leading-relaxed text-pretty">
-            {project.Innovation}
+            {description}
           </p>
         </div>
 
         <div className="space-y-8">
-          <div className="flex items-center gap-2">
-            <Building2 className="h-5 w-5 text-primary" />
-            <h2 className="text-xl font-semibold">Potential Industry Partners</h2>
-          </div>
-
+          {/* Company Personas */}
           <div className="space-y-6">
-            {project.output.persona_companies.map((company, index) => (
-              <CompanyCard key={index} company={company} index={index} />
-            ))}
+            <div className="flex items-center gap-2">
+              <Building2 className="h-5 w-5 text-primary" />
+              <h2 className="text-xl font-semibold">Potential Industry Partners</h2>
+            </div>
+
+            <div className="space-y-6">
+              {project.output.persona_companies.map((company, index) => (
+                <CompanyCard key={index} company={company} index={index} />
+              ))}
+            </div>
           </div>
+          
+          {/* Competitor Analysis */}
+          {hasCompetitors && (
+            <div className="space-y-6 mt-10">
+              <div className="flex items-center gap-2">
+                <Target className="h-5 w-5 text-primary" />
+                <h2 className="text-xl font-semibold">Competitor Analysis</h2>
+              </div>
+
+              <div className="space-y-6">
+                {project.output.competitors!.map((competitor, index) => (
+                  <CompetitorCard key={index} competitor={competitor} index={index} />
+                ))}
+              </div>
+            </div>
+          )}
+          
+          {/* Evaluation Results */}
+          {hasEvaluations && (
+            <div className="space-y-6 mt-10">
+              <div className="flex items-center gap-2">
+                <BarChart className="h-5 w-5 text-primary" />
+                <h2 className="text-xl font-semibold">Market Evaluation</h2>
+              </div>
+
+              <div className="space-y-6">
+                {project.output.evaluation_results!.map((evaluation, index) => (
+                  <EvaluationCard key={index} evaluation={evaluation} />
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
