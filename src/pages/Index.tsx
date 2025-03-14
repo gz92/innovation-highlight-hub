@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { toast } from "sonner";
-import { ArrowLeft, Building2, BarChart, Target, Info, Star } from "lucide-react";
+import { ArrowLeft, Building2, BarChart, Target, Info, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Progress } from "@/components/ui/progress";
@@ -12,13 +12,7 @@ import {
   TooltipProvider, 
   TooltipTrigger 
 } from "@/components/ui/tooltip";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { InnovationData, Competitor, EvaluationResult } from "../types";
 import CompanyCard from "../components/CompanyCard";
 
@@ -311,6 +305,7 @@ const Index = () => {
   const [project, setProject] = useState<InnovationData | null>(null);
   const [scenarios, setScenarios] = useState<Array<{id: string, name: string, data: InnovationData}>>([]);
   const [loading, setLoading] = useState(true);
+  const [expandedScenarios, setExpandedScenarios] = useState<{[key: string]: boolean}>({});
 
   useEffect(() => {
     const fetchProjectDetails = async () => {
@@ -355,6 +350,13 @@ const Index = () => {
         }
         
         setScenarios(extractedScenarios);
+        
+        // Initialize all scenarios as collapsed
+        const initialExpandState: {[key: string]: boolean} = {};
+        extractedScenarios.forEach(scenario => {
+          initialExpandState[scenario.id] = false;
+        });
+        setExpandedScenarios(initialExpandState);
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : "An unknown error occurred";
         toast.error("Failed to load project details", {
@@ -367,6 +369,13 @@ const Index = () => {
 
     fetchProjectDetails();
   }, [projectId]);
+
+  const toggleScenario = (id: string) => {
+    setExpandedScenarios(prev => ({
+      ...prev,
+      [id]: !prev[id]
+    }));
+  };
 
   if (loading) {
     return (
@@ -417,130 +426,183 @@ const Index = () => {
           </Link>
         </Button>
 
-        <h1 className="text-3xl font-bold tracking-tight mb-4 capitalize">
+        <h1 className="text-3xl font-bold tracking-tight mb-6 capitalize">
           {title}
         </h1>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+        <div className="space-y-6">
           {scenarios.map((scenario, index) => {
             const averageScores = calculateAverageScores(scenario.data.output.evaluation_results);
+            const isExpanded = expandedScenarios[scenario.id];
+            const cardBgColors = [
+              "bg-blue-50 dark:bg-blue-950/30", 
+              "bg-purple-50 dark:bg-purple-950/30", 
+              "bg-amber-50 dark:bg-amber-950/30", 
+              "bg-green-50 dark:bg-green-950/30", 
+              "bg-pink-50 dark:bg-pink-950/30"
+            ];
+            const cardColor = cardBgColors[index % cardBgColors.length];
             
             return (
-              <Card key={`idea-card-${index}`} className="overflow-hidden hover:shadow-md transition-shadow">
-                <CardHeader className="bg-primary/10 pb-2">
-                  <CardTitle className="text-lg">{scenario.name}</CardTitle>
-                </CardHeader>
-                <CardContent className="pt-4">
-                  <p className="line-clamp-3 text-sm text-muted-foreground">
-                    {scenario.data["Concise description"] || scenario.data.Innovation || scenario.data["Original wording"] || "No description available"}
-                  </p>
-                  <RatingPreview scores={averageScores} />
-                  <div className="pt-3">
-                    <Button variant="ghost" asChild className="text-primary p-0">
-                      <a href={`#scenario-${index}`}>View Details</a>
-                    </Button>
+              <Card 
+                key={`idea-card-${index}`} 
+                className={`overflow-hidden hover:shadow-md transition-shadow border-2 ${isExpanded ? 'border-primary/20' : 'border-border/40'}`}
+              >
+                <CardHeader 
+                  className={`${cardColor} cursor-pointer group`}
+                  onClick={() => toggleScenario(scenario.id)}
+                >
+                  <div className="flex justify-between items-center">
+                    <CardTitle className="text-lg group-hover:text-primary transition-colors">
+                      {scenario.name}
+                    </CardTitle>
+                    <div className="flex items-center gap-2">
+                      {averageScores && (
+                        <span className={`text-sm font-medium ${
+                          averageScores.finalScore >= 8 ? 'text-green-600 dark:text-green-400' :
+                          averageScores.finalScore >= 6 ? 'text-amber-600 dark:text-amber-400' :
+                          'text-red-600 dark:text-red-400'
+                        }`}>
+                          Score: {averageScores.finalScore}
+                        </span>
+                      )}
+                      <Button 
+                        variant="ghost" 
+                        size="icon"
+                        className="h-8 w-8 rounded-full"
+                      >
+                        {isExpanded ? (
+                          <ChevronUp className="h-5 w-5" />
+                        ) : (
+                          <ChevronDown className="h-5 w-5" />
+                        )}
+                      </Button>
+                    </div>
                   </div>
-                </CardContent>
+                  <CardDescription className="line-clamp-2 mt-2">
+                    {scenario.data["Concise description"] || scenario.data.Innovation || scenario.data["Original wording"] || "No description available"}
+                  </CardDescription>
+                  
+                  {averageScores && (
+                    <div className="mt-3 pt-2 border-t border-border/20">
+                      <div className="grid grid-cols-6 gap-2 text-xs">
+                        <div>
+                          <div className="text-muted-foreground">Uniqueness</div>
+                          <div className="font-medium">{averageScores.uniqueness}</div>
+                        </div>
+                        <div>
+                          <div className="text-muted-foreground">Pain Point</div>
+                          <div className="font-medium">{averageScores.painPoint}</div>
+                        </div>
+                        <div>
+                          <div className="text-muted-foreground">Features</div>
+                          <div className="font-medium">{averageScores.features}</div>
+                        </div>
+                        <div>
+                          <div className="text-muted-foreground">Market Fit</div>
+                          <div className="font-medium">{averageScores.marketFit}</div>
+                        </div>
+                        <div>
+                          <div className="text-muted-foreground">Value</div>
+                          <div className="font-medium">{averageScores.value}</div>
+                        </div>
+                        <div>
+                          <div className="text-muted-foreground">Barriers</div>
+                          <div className="font-medium">{averageScores.barriers}</div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </CardHeader>
+                
+                {isExpanded && (
+                  <CardContent className="p-6 space-y-10 animate-accordion-down">
+                    <div className="bg-card rounded-xl border border-border/40 subtle-shadow p-6">
+                      {scenario.data["Original wording"] && (
+                        <div className="mb-4">
+                          <h3 className="text-sm font-medium text-muted-foreground mb-1">Original Wording</h3>
+                          <p className="p-3 bg-secondary/20 rounded-lg text-foreground dark:text-white text-sm">
+                            {scenario.data["Original wording"]}
+                          </p>
+                        </div>
+                      )}
+                      
+                      {scenario.data["Marketing version"] && (
+                        <div className="mb-4">
+                          <h3 className="text-sm font-medium text-muted-foreground mb-1">Marketing Version</h3>
+                          <p className="p-4 bg-primary/10 rounded-lg border border-primary/30 text-foreground dark:text-white font-medium">
+                            {scenario.data["Marketing version"]}
+                          </p>
+                        </div>
+                      )}
+                      
+                      {scenario.data["Concise description"] && (
+                        <div className="mb-4">
+                          <h3 className="text-sm font-medium text-muted-foreground mb-1">Concise Description</h3>
+                          <p className="p-3 bg-background rounded-lg border border-border/40 text-foreground dark:text-white">
+                            {scenario.data["Concise description"]}
+                          </p>
+                        </div>
+                      )}
+                      
+                      {scenario.data.Innovation && !scenario.data["Concise description"] && !scenario.data["Original wording"] && (
+                        <p className="text-lg leading-relaxed text-pretty text-foreground dark:text-white font-medium">
+                          {scenario.data.Innovation}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="space-y-8">
+                      {scenario.data.output.competitors && scenario.data.output.competitors.length > 0 && (
+                        <div className="space-y-6">
+                          <div className="flex items-center gap-2">
+                            <Target className="h-5 w-5 text-primary" />
+                            <h2 className="text-xl font-semibold">Competitor Analysis</h2>
+                          </div>
+
+                          <div className="space-y-6">
+                            {scenario.data.output.competitors.map((competitor, index) => (
+                              <CompetitorCard key={index} competitor={competitor} index={index} />
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {scenario.data.output.evaluation_results && scenario.data.output.evaluation_results.length > 0 && (
+                        <div className="space-y-6">
+                          <div className="flex items-center gap-2">
+                            <BarChart className="h-5 w-5 text-primary" />
+                            <h2 className="text-xl font-semibold">Market Evaluation</h2>
+                          </div>
+
+                          <div className="space-y-6">
+                            {scenario.data.output.evaluation_results.map((evaluation, index) => (
+                              <EvaluationCard key={index} evaluation={evaluation} />
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {scenario.data.output.persona_companies && scenario.data.output.persona_companies.length > 0 && (
+                        <div className="space-y-6">
+                          <div className="flex items-center gap-2">
+                            <Building2 className="h-5 w-5 text-primary" />
+                            <h2 className="text-xl font-semibold">Potential Industry Partner Personas</h2>
+                          </div>
+
+                          <div className="space-y-6">
+                            {scenario.data.output.persona_companies.map((company, index) => (
+                              <CompanyCard key={index} company={company} index={index} />
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                )}
               </Card>
             );
           })}
-        </div>
-
-        <div className="space-y-4">
-          {scenarios.map((scenario, index) => (
-            <div 
-              key={`scenario-${index}`}
-              id={`scenario-${index}`}
-              className="bg-card rounded-xl border border-border/40 subtle-shadow overflow-hidden"
-            >
-              <div className="px-6 py-4 bg-primary/10 flex items-center justify-between">
-                <h2 className="text-lg font-semibold">{scenario.name}</h2>
-              </div>
-              <div className="p-6 space-y-10">
-                <div className="bg-card rounded-xl border border-border/40 subtle-shadow p-6">
-                  {scenario.data["Original wording"] && (
-                    <div className="mb-4">
-                      <h3 className="text-sm font-medium text-muted-foreground mb-1">Original Wording</h3>
-                      <p className="p-3 bg-secondary/20 rounded-lg text-foreground dark:text-white text-sm">
-                        {scenario.data["Original wording"]}
-                      </p>
-                    </div>
-                  )}
-                  
-                  {scenario.data["Marketing version"] && (
-                    <div className="mb-4">
-                      <h3 className="text-sm font-medium text-muted-foreground mb-1">Marketing Version</h3>
-                      <p className="p-4 bg-primary/10 rounded-lg border border-primary/30 text-foreground dark:text-white font-medium">
-                        {scenario.data["Marketing version"]}
-                      </p>
-                    </div>
-                  )}
-                  
-                  {scenario.data["Concise description"] && (
-                    <div className="mb-4">
-                      <h3 className="text-sm font-medium text-muted-foreground mb-1">Concise Description</h3>
-                      <p className="p-3 bg-background rounded-lg border border-border/40 text-foreground dark:text-white">
-                        {scenario.data["Concise description"]}
-                      </p>
-                    </div>
-                  )}
-                  
-                  {scenario.data.Innovation && !scenario.data["Concise description"] && !scenario.data["Original wording"] && (
-                    <p className="text-lg leading-relaxed text-pretty text-foreground dark:text-white font-medium">
-                      {scenario.data.Innovation}
-                    </p>
-                  )}
-                </div>
-
-                <div className="space-y-8">
-                  {scenario.data.output.competitors && scenario.data.output.competitors.length > 0 && (
-                    <div className="space-y-6">
-                      <div className="flex items-center gap-2">
-                        <Target className="h-5 w-5 text-primary" />
-                        <h2 className="text-xl font-semibold">Competitor Analysis</h2>
-                      </div>
-
-                      <div className="space-y-6">
-                        {scenario.data.output.competitors.map((competitor, index) => (
-                          <CompetitorCard key={index} competitor={competitor} index={index} />
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  
-                  {scenario.data.output.evaluation_results && scenario.data.output.evaluation_results.length > 0 && (
-                    <div className="space-y-6">
-                      <div className="flex items-center gap-2">
-                        <BarChart className="h-5 w-5 text-primary" />
-                        <h2 className="text-xl font-semibold">Market Evaluation</h2>
-                      </div>
-
-                      <div className="space-y-6">
-                        {scenario.data.output.evaluation_results.map((evaluation, index) => (
-                          <EvaluationCard key={index} evaluation={evaluation} />
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  
-                  {scenario.data.output.persona_companies && scenario.data.output.persona_companies.length > 0 && (
-                    <div className="space-y-6">
-                      <div className="flex items-center gap-2">
-                        <Building2 className="h-5 w-5 text-primary" />
-                        <h2 className="text-xl font-semibold">Potential Industry Partner Personas</h2>
-                      </div>
-
-                      <div className="space-y-6">
-                        {scenario.data.output.persona_companies.map((company, index) => (
-                          <CompanyCard key={index} company={company} index={index} />
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))}
         </div>
       </div>
     </div>
