@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -6,7 +5,8 @@ import { InnovationData } from "../types";
 import ProjectHeader from "../components/ProjectHeader";
 import LoadingProject from "../components/LoadingProject";
 import ProjectNotFound from "../components/ProjectNotFound";
-import { ScenarioCard, calculateAverageScores } from "../components/ScenarioCard";
+import { ScenarioCard } from "../components/ScenarioCard";
+import { calculateAverageScores } from "../utils/scoreCalculations";
 
 const Index = () => {
   const [searchParams] = useSearchParams();
