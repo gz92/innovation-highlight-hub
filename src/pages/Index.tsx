@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { toast } from "sonner";
@@ -12,7 +11,7 @@ import {
   TooltipProvider, 
   TooltipTrigger 
 } from "@/components/ui/tooltip";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter, CardGroup } from "@/components/ui/card";
 import { InnovationData, Competitor, EvaluationResult } from "../types";
 import CompanyCard from "../components/CompanyCard";
 
@@ -561,15 +560,12 @@ const Index = () => {
 
                           <div className="space-y-6">
                             {scenario.data.output.competitors.map((competitor, idx) => (
-                              <div 
-                                key={idx} 
-                                className="space-y-4 bg-card/50 rounded-xl border-2 border-border/40 p-6 hover:border-primary/20 transition-colors"
-                              >
+                              <CardGroup key={idx}>
                                 <CompetitorCard competitor={competitor} index={idx} />
                                 {scenario.data.output.evaluation_results[idx] && (
                                   <EvaluationCard evaluation={scenario.data.output.evaluation_results[idx]} />
                                 )}
-                              </div>
+                              </CardGroup>
                             ))}
                           </div>
                         </div>
