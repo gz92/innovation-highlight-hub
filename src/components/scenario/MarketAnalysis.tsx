@@ -10,12 +10,12 @@ interface MarketAnalysisProps {
 }
 
 export const MarketAnalysis = ({ data }: MarketAnalysisProps) => {
-  // Less strict condition to render component
+  // Don't render if there's no output data
   if (!data.output) {
     return null;
   }
   
-  // Initialize competitors array even if it doesn't exist
+  // Initialize competitors array if it doesn't exist
   const competitors = data.output.competitors || [];
   const evaluationResults = data.output.evaluation_results || [];
   

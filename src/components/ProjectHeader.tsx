@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button";
 
 interface ProjectHeaderProps {
   title: string;
+  subtitle?: string;
 }
 
-const ProjectHeader = ({ title }: ProjectHeaderProps) => {
+const ProjectHeader = ({ title, subtitle }: ProjectHeaderProps) => {
   return (
     <>
       <Button variant="ghost" asChild className="mb-6 -ml-2">
@@ -17,9 +18,16 @@ const ProjectHeader = ({ title }: ProjectHeaderProps) => {
         </Link>
       </Button>
 
-      <h1 className="text-3xl font-bold tracking-tight mb-6 capitalize">
-        {title}
-      </h1>
+      <div className="text-center mb-10">
+        <h1 className="text-3xl font-bold tracking-tight capitalize">
+          {title}
+        </h1>
+        {subtitle && (
+          <p className="mt-4 text-lg text-muted-foreground max-w-3xl mx-auto">
+            {subtitle}
+          </p>
+        )}
+      </div>
     </>
   );
 };

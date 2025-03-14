@@ -16,6 +16,7 @@ const Index = () => {
   const [scenarios, setScenarios] = useState<Array<{id: string, name: string, data: InnovationData}>>([]);
   const [loading, setLoading] = useState(true);
   const [expandedScenarios, setExpandedScenarios] = useState<{[key: string]: boolean}>({});
+  const [mainInnovationText, setMainInnovationText] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProjectDetails = async () => {
@@ -45,6 +46,11 @@ const Index = () => {
               data: data
             });
           } else {
+            // Store the main innovation text if available
+            if (data.Innovation) {
+              setMainInnovationText(data.Innovation);
+            }
+            
             extractedScenarios.push({
               id: "main",
               name: "Main Scenario",
@@ -54,6 +60,11 @@ const Index = () => {
         };
         
         if (Array.isArray(data)) {
+          // Get the main innovation text from the first item if it's an array
+          if (data[0] && data[0].Innovation) {
+            setMainInnovationText(data[0].Innovation);
+          }
+          
           data.forEach(item => extractScenarios(item));
         } else {
           extractScenarios(data);
@@ -113,7 +124,7 @@ const Index = () => {
   return (
     <div className="min-h-screen w-full">
       <div className="container max-w-4xl py-12">
-        <ProjectHeader title={title} />
+        <ProjectHeader title={title} subtitle={mainInnovationText || ""} />
 
         <div className="space-y-6">
           {sortedScenarios.map((scenario, index) => {
