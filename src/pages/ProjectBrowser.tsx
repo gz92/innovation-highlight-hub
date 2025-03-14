@@ -28,7 +28,8 @@ const ProjectCard = ({ project, index, filename }: { project: InnovationData; in
   
   // Get industry tags if available
   const getTags = (project: InnovationData) => {
-    if (project.output.persona_companies && project.output.persona_companies.length > 0) {
+    // Check if project.output and project.output.persona_companies exist
+    if (project.output && project.output.persona_companies && project.output.persona_companies.length > 0) {
       const filterText = project.output.persona_companies[0].apollo_filter;
       if (filterText) {
         const industrySection = filterText.split(';')[0];
