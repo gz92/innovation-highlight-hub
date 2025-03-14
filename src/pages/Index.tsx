@@ -81,10 +81,10 @@ const Index = () => {
         
         setScenarios(extractedScenarios);
         
-        // Initialize all scenarios as collapsed by default
+        // Initialize all scenarios as expanded for debugging
         const initialExpandState: {[key: string]: boolean} = {};
         extractedScenarios.forEach(scenario => {
-          initialExpandState[scenario.id] = false; // Set all to collapsed initially
+          initialExpandState[scenario.id] = true; // Set all to expanded initially for debugging
         });
         setExpandedScenarios(initialExpandState);
       } catch (err) {
