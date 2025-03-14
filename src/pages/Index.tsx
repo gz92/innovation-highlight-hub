@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { toast } from "sonner";
@@ -13,8 +12,13 @@ import {
 } from "@/components/ui/tooltip";
 import { InnovationData, Competitor, EvaluationResult } from "../types";
 import CompanyCard from "../components/CompanyCard";
+import { 
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
-// Component to display competitor information
 const CompetitorCard = ({ competitor, index }: { competitor: Competitor; index: number }) => {
   return (
     <div className="bg-card rounded-lg border border-border/40 p-5 subtle-shadow">
@@ -60,9 +64,7 @@ const CompetitorCard = ({ competitor, index }: { competitor: Competitor; index: 
   );
 };
 
-// Component to display evaluation results
 const EvaluationCard = ({ evaluation }: { evaluation: EvaluationResult }) => {
-  // Color based on final score
   const getScoreColor = (score: number) => {
     if (score >= 8) return "text-green-500";
     if (score >= 6) return "text-amber-500";
@@ -214,11 +216,9 @@ const EvaluationCard = ({ evaluation }: { evaluation: EvaluationResult }) => {
   );
 };
 
-// Component to display an innovation scenario
 const ScenarioSection = ({ project, projectId, index }: { project: InnovationData, projectId: string, index: number }) => {
   const [expanded, setExpanded] = useState(index === 0); // Expand only the first scenario by default
   
-  // Handle both new and old format
   const getDescription = () => {
     return project.Innovation || 
            project["Concise description"] || 
@@ -233,10 +233,8 @@ const ScenarioSection = ({ project, projectId, index }: { project: InnovationDat
   const hasCompetitors = project.output.competitors && project.output.competitors.length > 0;
   const hasEvaluations = project.output.evaluation_results && project.output.evaluation_results.length > 0;
   
-  // Get appropriate description based on the available fields
   const description = getDescription();
   
-  // Get the marketing version if available
   const marketingVersion = project["Marketing version"] || null;
 
   return (
@@ -265,7 +263,6 @@ const ScenarioSection = ({ project, projectId, index }: { project: InnovationDat
           </div>
 
           <div className="space-y-8">
-            {/* Company Personas */}
             <div className="space-y-6">
               <div className="flex items-center gap-2">
                 <Building2 className="h-5 w-5 text-primary" />
@@ -279,7 +276,6 @@ const ScenarioSection = ({ project, projectId, index }: { project: InnovationDat
               </div>
             </div>
             
-            {/* Competitor Analysis */}
             {hasCompetitors && (
               <div className="space-y-6 mt-10">
                 <div className="flex items-center gap-2">
@@ -295,7 +291,6 @@ const ScenarioSection = ({ project, projectId, index }: { project: InnovationDat
               </div>
             )}
             
-            {/* Evaluation Results */}
             {hasEvaluations && (
               <div className="space-y-6 mt-10">
                 <div className="flex items-center gap-2">
@@ -326,7 +321,6 @@ const Index = () => {
   useEffect(() => {
     const fetchAllProjects = async () => {
       try {
-        // First, fetch the list of all innovation files
         const indexResponse = await fetch('/innovations/index.json');
         if (!indexResponse.ok) {
           throw new Error("Failed to load innovation index");
@@ -335,7 +329,6 @@ const Index = () => {
         const indexData = await indexResponse.json();
         const fileNames = indexData.files;
         
-        // Fetch each innovation file
         const projects: {[key: string]: InnovationData} = {};
         
         await Promise.all(fileNames.map(async (fileName: string) => {
@@ -399,7 +392,6 @@ const Index = () => {
     );
   }
 
-  // If a specific project ID is provided, show only that project
   if (projectId && allProjects[projectId]) {
     return (
       <div className="min-h-screen w-full">
@@ -412,20 +404,85 @@ const Index = () => {
           </Button>
 
           <h1 className="text-3xl font-bold tracking-tight mb-6 capitalize">
-            Innovation Details
+            {projectId.replace('.json', '').replace(/-/g, ' ')} Innovation
           </h1>
+          
+          <Accordion type="single" collapsible defaultValue="scenario-0" className="space-y-6">
+            {Object.entries(allProjects).map(([fileName, project], index) => (
+              <AccordionItem key={fileName} value={`scenario-${index}`} className="border border-border/40 rounded-xl bg-background subtle-shadow px-0">
+                <AccordionTrigger className="px-4 py-3 hover:no-underline">
+                  <span className="text-xl font-semibold capitalize">
+                    {fileName.replace('.json', '').replace(/-/g, ' ')}
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent className="px-6 pb-6 pt-0 border-t border-border/40">
+                  <div className="bg-card rounded-xl p-6 border border-border/40 mb-10 subtle-shadow mt-6">
+                    {project["Marketing version"] && (
+                      <div className="mb-4 p-3 bg-primary/5 rounded-lg border border-primary/20">
+                        <p className="text-lg italic text-primary-foreground">{project["Marketing version"]}</p>
+                      </div>
+                    )}
+                    <p className="text-lg leading-relaxed text-pretty">
+                      {project.Innovation || 
+                       project["Concise description"] || 
+                       project["Original wording"] || 
+                       "No description available"}
+                    </p>
+                  </div>
 
-          <ScenarioSection 
-            project={allProjects[projectId]} 
-            projectId={projectId} 
-            index={0} 
-          />
+                  <div className="space-y-8">
+                    <div className="space-y-6">
+                      <div className="flex items-center gap-2">
+                        <Building2 className="h-5 w-5 text-primary" />
+                        <h2 className="text-xl font-semibold">Potential Industry Partners</h2>
+                      </div>
+
+                      <div className="space-y-6">
+                        {project.output.persona_companies.map((company, idx) => (
+                          <CompanyCard key={idx} company={company} index={idx} />
+                        ))}
+                      </div>
+                    </div>
+                    
+                    {project.output.competitors && project.output.competitors.length > 0 && (
+                      <div className="space-y-6 mt-10">
+                        <div className="flex items-center gap-2">
+                          <Target className="h-5 w-5 text-primary" />
+                          <h2 className="text-xl font-semibold">Competitor Analysis</h2>
+                        </div>
+
+                        <div className="space-y-6">
+                          {project.output.competitors.map((competitor, idx) => (
+                            <CompetitorCard key={idx} competitor={competitor} index={idx} />
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {project.output.evaluation_results && project.output.evaluation_results.length > 0 && (
+                      <div className="space-y-6 mt-10">
+                        <div className="flex items-center gap-2">
+                          <BarChart className="h-5 w-5 text-primary" />
+                          <h2 className="text-xl font-semibold">Market Evaluation</h2>
+                        </div>
+
+                        <div className="space-y-6">
+                          {project.output.evaluation_results.map((evaluation, idx) => (
+                            <EvaluationCard key={idx} evaluation={evaluation} />
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
         </div>
       </div>
     );
   }
 
-  // If no specific project ID or an invalid ID, show all projects
   return (
     <div className="min-h-screen w-full">
       <div className="container max-w-4xl py-12">
