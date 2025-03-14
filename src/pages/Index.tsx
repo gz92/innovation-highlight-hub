@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { toast } from "sonner";
-import { ArrowLeft, Building2, BarChart, Target, Info } from "lucide-react";
+import { ArrowLeft, Building2, BarChart, Target, Info, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { 
@@ -11,6 +11,12 @@ import {
   TooltipProvider, 
   TooltipTrigger 
 } from "@/components/ui/tooltip";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { InnovationData, Competitor, EvaluationResult } from "../types";
 import CompanyCard from "../components/CompanyCard";
 
@@ -218,6 +224,7 @@ const Index = () => {
   const [searchParams] = useSearchParams();
   const projectId = searchParams.get("id");
   const [project, setProject] = useState<InnovationData | null>(null);
+  const [scenarios, setScenarios] = useState<Array<{id: string, data: InnovationData}>>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -237,6 +244,35 @@ const Index = () => {
         
         const data = await response.json();
         setProject(data);
+        
+        // Extract scenarios based on PropID
+        const extractedScenarios: Array<{id: string, data: InnovationData}> = [];
+        
+        // Function to extract scenarios from the data
+        const extractScenarios = (data: InnovationData) => {
+          // If it has a PropID, it's a scenario
+          if (data.PropID) {
+            extractedScenarios.push({
+              id: data.PropID.trim(),
+              data: data
+            });
+          } else {
+            // Main project data (without PropID) also gets added as a scenario
+            extractedScenarios.push({
+              id: "main",
+              data: data
+            });
+          }
+        };
+        
+        // Handle if data is an array
+        if (Array.isArray(data)) {
+          data.forEach(item => extractScenarios(item));
+        } else {
+          extractScenarios(data);
+        }
+        
+        setScenarios(extractedScenarios);
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : "An unknown error occurred";
         toast.error("Failed to load project details", {
@@ -269,7 +305,7 @@ const Index = () => {
     );
   }
 
-  if (!project) {
+  if (!project && scenarios.length === 0) {
     return (
       <div className="container max-w-4xl py-12 text-center">
         <div className="space-y-4">
@@ -285,26 +321,9 @@ const Index = () => {
     );
   }
 
-  // Handle both new and old format
-  const getDescription = () => {
-    return project.Innovation || 
-           project["Concise description"] || 
-           project["Original wording"] || 
-           "No description available";
-  };
-
   const title = projectId
     ? projectId.replace('.json', '').replace(/-/g, ' ')
     : 'Project Details';
-
-  const hasCompetitors = project.output.competitors && project.output.competitors.length > 0;
-  const hasEvaluations = project.output.evaluation_results && project.output.evaluation_results.length > 0;
-  
-  // Get appropriate description based on the available fields
-  const description = getDescription();
-  
-  // Get the marketing version if available
-  const marketingVersion = project["Marketing version"] || null;
 
   return (
     <div className="min-h-screen w-full">
@@ -320,64 +339,94 @@ const Index = () => {
           {title}
         </h1>
 
-        <div className="bg-card rounded-xl p-6 border border-border/40 mb-10 subtle-shadow">
-          {marketingVersion && (
-            <div className="mb-4 p-3 bg-primary/5 rounded-lg border border-primary/20">
-              <p className="text-lg italic text-primary-foreground">{marketingVersion}</p>
-            </div>
-          )}
-          <p className="text-lg leading-relaxed text-pretty">
-            {description}
-          </p>
-        </div>
+        <Accordion type="single" collapsible defaultValue="scenario-0" className="space-y-4">
+          {scenarios.map((scenario, index) => (
+            <AccordionItem 
+              key={`scenario-${index}`} 
+              value={`scenario-${index}`}
+              className="bg-card rounded-xl border border-border/40 subtle-shadow overflow-hidden"
+            >
+              <AccordionTrigger className="px-6 py-4 hover:no-underline">
+                <span className="text-lg font-semibold">
+                  {scenario.data.PropID ? `Scenario ${scenario.id}` : 'Main Scenario'}
+                </span>
+              </AccordionTrigger>
+              <AccordionContent className="px-0">
+                <div className="p-6 pt-2 space-y-10">
+                  <div className="bg-card rounded-xl border border-border/40 subtle-shadow p-6">
+                    {/* Marketing version block */}
+                    {(scenario.data["Marketing version"] || scenario.data.Marketing_version) && (
+                      <div className="mb-4 p-3 bg-primary/5 rounded-lg border border-primary/20">
+                        <p className="text-lg italic text-primary-foreground">
+                          {scenario.data["Marketing version"] || scenario.data.Marketing_version}
+                        </p>
+                      </div>
+                    )}
+                    
+                    {/* Description block */}
+                    <p className="text-lg leading-relaxed text-pretty">
+                      {scenario.data.Innovation || 
+                       scenario.data["Concise description"] || 
+                       scenario.data["Original wording"] || 
+                       scenario.data.Original_wording || 
+                       "No description available"}
+                    </p>
+                  </div>
 
-        <div className="space-y-8">
-          {/* Company Personas */}
-          <div className="space-y-6">
-            <div className="flex items-center gap-2">
-              <Building2 className="h-5 w-5 text-primary" />
-              <h2 className="text-xl font-semibold">Potential Industry Partners</h2>
-            </div>
+                  <div className="space-y-8">
+                    {/* Company Personas */}
+                    {scenario.data.output.persona_companies && scenario.data.output.persona_companies.length > 0 && (
+                      <div className="space-y-6">
+                        <div className="flex items-center gap-2">
+                          <Building2 className="h-5 w-5 text-primary" />
+                          <h2 className="text-xl font-semibold">Potential Industry Partners</h2>
+                        </div>
 
-            <div className="space-y-6">
-              {project.output.persona_companies.map((company, index) => (
-                <CompanyCard key={index} company={company} index={index} />
-              ))}
-            </div>
-          </div>
-          
-          {/* Competitor Analysis */}
-          {hasCompetitors && (
-            <div className="space-y-6 mt-10">
-              <div className="flex items-center gap-2">
-                <Target className="h-5 w-5 text-primary" />
-                <h2 className="text-xl font-semibold">Competitor Analysis</h2>
-              </div>
+                        <div className="space-y-6">
+                          {scenario.data.output.persona_companies.map((company, index) => (
+                            <CompanyCard key={index} company={company} index={index} />
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Competitor Analysis */}
+                    {scenario.data.output.competitors && scenario.data.output.competitors.length > 0 && (
+                      <div className="space-y-6 mt-10">
+                        <div className="flex items-center gap-2">
+                          <Target className="h-5 w-5 text-primary" />
+                          <h2 className="text-xl font-semibold">Competitor Analysis</h2>
+                        </div>
 
-              <div className="space-y-6">
-                {project.output.competitors!.map((competitor, index) => (
-                  <CompetitorCard key={index} competitor={competitor} index={index} />
-                ))}
-              </div>
-            </div>
-          )}
-          
-          {/* Evaluation Results */}
-          {hasEvaluations && (
-            <div className="space-y-6 mt-10">
-              <div className="flex items-center gap-2">
-                <BarChart className="h-5 w-5 text-primary" />
-                <h2 className="text-xl font-semibold">Market Evaluation</h2>
-              </div>
+                        <div className="space-y-6">
+                          {scenario.data.output.competitors.map((competitor, index) => (
+                            <CompetitorCard key={index} competitor={competitor} index={index} />
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Evaluation Results */}
+                    {scenario.data.output.evaluation_results && scenario.data.output.evaluation_results.length > 0 && (
+                      <div className="space-y-6 mt-10">
+                        <div className="flex items-center gap-2">
+                          <BarChart className="h-5 w-5 text-primary" />
+                          <h2 className="text-xl font-semibold">Market Evaluation</h2>
+                        </div>
 
-              <div className="space-y-6">
-                {project.output.evaluation_results!.map((evaluation, index) => (
-                  <EvaluationCard key={index} evaluation={evaluation} />
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
+                        <div className="space-y-6">
+                          {scenario.data.output.evaluation_results.map((evaluation, index) => (
+                            <EvaluationCard key={index} evaluation={evaluation} />
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
       </div>
     </div>
   );
