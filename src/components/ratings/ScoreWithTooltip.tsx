@@ -10,3 +10,16 @@ export const getScoreBackgroundColor = (score: number) => {
   if (score >= 6) return "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400";
   return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400";
 };
+
+interface ScoreWithTooltipProps {
+  score: number;
+  label?: string;
+}
+
+export const ScoreWithTooltip = ({ score, label }: ScoreWithTooltipProps) => {
+  return (
+    <span className={`font-medium ${getScoreColor(score)}`} title={label}>
+      {score}
+    </span>
+  );
+};

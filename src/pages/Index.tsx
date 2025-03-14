@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -97,12 +98,17 @@ const Index = () => {
     ? projectId.replace('.json', '').replace(/-/g, ' ')
     : 'Project Details';
 
-  // Sort scenarios by their average score in descending order
+  // Sort scenarios by their final score in descending order
   const sortedScenarios = [...scenarios].sort((a, b) => {
     const scoreA = calculateAverageScores(a.data.output?.evaluation_results)?.finalScore || 0;
     const scoreB = calculateAverageScores(b.data.output?.evaluation_results)?.finalScore || 0;
-    return scoreB - scoreA; // This ensures highest scores come first
+    return scoreB - scoreA; // Ensures highest scores come first
   });
+
+  console.log("Sorted scenarios:", sortedScenarios.map(s => ({
+    name: s.name,
+    score: calculateAverageScores(s.data.output?.evaluation_results)?.finalScore || 0
+  })));
 
   return (
     <div className="min-h-screen w-full">
