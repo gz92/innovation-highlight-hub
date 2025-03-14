@@ -490,7 +490,7 @@ const Index = () => {
                             {scenario.data.output.competitors && scenario.data.output.competitors.map((competitor, idx) => {
                               // Find a matching evaluation if any
                               const matchingEvaluation = scenario.data.output.evaluation_results?.find(
-                                eval => eval.value_proposition.toLowerCase().includes(competitor.name.toLowerCase())
+                                evaluation => evaluation.value_proposition.toLowerCase().includes(competitor.name.toLowerCase())
                               );
                               
                               return (
@@ -506,9 +506,9 @@ const Index = () => {
                             {/* Show any remaining evaluations that weren't matched with competitors */}
                             {scenario.data.output.evaluation_results && 
                              scenario.data.output.evaluation_results
-                              .filter(eval => 
+                              .filter(evaluation => 
                                 !scenario.data.output.competitors?.some(comp => 
-                                  eval.value_proposition.toLowerCase().includes(comp.name.toLowerCase())
+                                  evaluation.value_proposition.toLowerCase().includes(comp.name.toLowerCase())
                                 )
                               )
                               .map((evaluation, idx) => (
