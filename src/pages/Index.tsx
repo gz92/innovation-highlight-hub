@@ -97,19 +97,26 @@ const Index = () => {
     ? projectId.replace('.json', '').replace(/-/g, ' ')
     : 'Project Details';
 
+  // Sort scenarios by their average score in descending order
+  const sortedScenarios = [...scenarios].sort((a, b) => {
+    const scoreA = calculateAverageScores(a.data.output?.evaluation_results)?.finalScore || 0;
+    const scoreB = calculateAverageScores(b.data.output?.evaluation_results)?.finalScore || 0;
+    return scoreB - scoreA;
+  });
+
   return (
     <div className="min-h-screen w-full">
       <div className="container max-w-4xl py-12">
         <ProjectHeader title={title} />
 
         <div className="space-y-6">
-          {scenarios.map((scenario, index) => {
-            const averageScores = calculateAverageScores(scenario.data.output.evaluation_results);
+          {sortedScenarios.map((scenario, index) => {
+            const averageScores = calculateAverageScores(scenario.data.output?.evaluation_results);
             const isExpanded = expandedScenarios[scenario.id];
             
             return (
               <ScenarioCard
-                key={index}
+                key={scenario.id}
                 scenario={scenario}
                 index={index}
                 expanded={isExpanded}
