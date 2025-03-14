@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { toast } from "sonner";
@@ -16,6 +17,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { InnovationData, Competitor, EvaluationResult } from "../types";
 import CompanyCard from "../components/CompanyCard";
 
@@ -220,7 +222,7 @@ const Index = () => {
   const [searchParams] = useSearchParams();
   const projectId = searchParams.get("id");
   const [project, setProject] = useState<InnovationData | null>(null);
-  const [scenarios, setScenarios] = useState<Array<{id: string, data: InnovationData}>>([]);
+  const [scenarios, setScenarios] = useState<Array<{id: string, name: string, data: InnovationData}>>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -241,17 +243,19 @@ const Index = () => {
         const data = await response.json();
         setProject(data);
         
-        const extractedScenarios: Array<{id: string, data: InnovationData}> = [];
+        const extractedScenarios: Array<{id: string, name: string, data: InnovationData}> = [];
         
         const extractScenarios = (data: InnovationData) => {
           if (data.PropID) {
             extractedScenarios.push({
               id: data.PropID.trim(),
+              name: data["Idea name"] || `Scenario ${data.PropID.trim()}`,
               data: data
             });
           } else {
             extractedScenarios.push({
               id: "main",
+              name: "Main Scenario",
               data: data
             });
           }
@@ -330,36 +334,72 @@ const Index = () => {
           {title}
         </h1>
 
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+          {scenarios.map((scenario, index) => (
+            <Card key={`idea-card-${index}`} className="overflow-hidden hover:shadow-md transition-shadow">
+              <CardHeader className="bg-primary/10 pb-2">
+                <CardTitle className="text-lg">{scenario.name}</CardTitle>
+              </CardHeader>
+              <CardContent className="pt-4">
+                <p className="line-clamp-3 text-sm text-muted-foreground">
+                  {scenario.data["Concise description"] || scenario.data.Innovation || scenario.data["Original wording"] || "No description available"}
+                </p>
+                <Button variant="ghost" asChild className="text-primary mt-2 p-0">
+                  <a href={`#scenario-${index}`}>View Details</a>
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
         <Accordion type="single" collapsible defaultValue="scenario-0" className="space-y-4">
           {scenarios.map((scenario, index) => (
             <AccordionItem 
               key={`scenario-${index}`} 
               value={`scenario-${index}`}
+              id={`scenario-${index}`}
               className="bg-card rounded-xl border border-border/40 subtle-shadow overflow-hidden"
             >
               <AccordionTrigger className="px-6 py-4 hover:no-underline">
                 <span className="text-lg font-semibold">
-                  {scenario.data.PropID ? `Scenario ${scenario.id}` : 'Main Scenario'}
+                  {scenario.name}
                 </span>
               </AccordionTrigger>
               <AccordionContent className="px-0">
                 <div className="p-6 pt-2 space-y-10">
                   <div className="bg-card rounded-xl border border-border/40 subtle-shadow p-6">
-                    {(scenario.data["Marketing version"] || scenario.data.Marketing_version) && (
-                      <div className="mb-4 p-4 bg-primary/10 rounded-lg border border-primary/30">
-                        <p className="text-lg font-medium text-foreground dark:text-white">
-                          {scenario.data["Marketing version"] || scenario.data.Marketing_version}
+                    {scenario.data["Original wording"] && (
+                      <div className="mb-4">
+                        <h3 className="text-sm font-medium text-muted-foreground mb-1">Original Wording</h3>
+                        <p className="p-3 bg-secondary/20 rounded-lg text-foreground dark:text-white text-sm">
+                          {scenario.data["Original wording"]}
                         </p>
                       </div>
                     )}
                     
-                    <p className="text-lg leading-relaxed text-pretty text-foreground dark:text-white font-medium">
-                      {scenario.data.Innovation || 
-                       scenario.data["Concise description"] || 
-                       scenario.data["Original wording"] || 
-                       scenario.data.Original_wording || 
-                       "No description available"}
-                    </p>
+                    {scenario.data["Marketing version"] && (
+                      <div className="mb-4">
+                        <h3 className="text-sm font-medium text-muted-foreground mb-1">Marketing Version</h3>
+                        <p className="p-4 bg-primary/10 rounded-lg border border-primary/30 text-foreground dark:text-white font-medium">
+                          {scenario.data["Marketing version"]}
+                        </p>
+                      </div>
+                    )}
+                    
+                    {scenario.data["Concise description"] && (
+                      <div className="mb-4">
+                        <h3 className="text-sm font-medium text-muted-foreground mb-1">Concise Description</h3>
+                        <p className="p-3 bg-background rounded-lg border border-border/40 text-foreground dark:text-white">
+                          {scenario.data["Concise description"]}
+                        </p>
+                      </div>
+                    )}
+                    
+                    {scenario.data.Innovation && !scenario.data["Concise description"] && !scenario.data["Original wording"] && (
+                      <p className="text-lg leading-relaxed text-pretty text-foreground dark:text-white font-medium">
+                        {scenario.data.Innovation}
+                      </p>
+                    )}
                   </div>
 
                   <div className="space-y-8">
