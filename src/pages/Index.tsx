@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { toast } from "sonner";
-import { ArrowLeft, Building2, BarChart, Target, Info } from "lucide-react";
+import { ArrowLeft, Building2, BarChart, Target, Info, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { 
@@ -214,32 +214,146 @@ const EvaluationCard = ({ evaluation }: { evaluation: EvaluationResult }) => {
   );
 };
 
+// Component to display an innovation scenario
+const ScenarioSection = ({ project, projectId, index }: { project: InnovationData, projectId: string, index: number }) => {
+  const [expanded, setExpanded] = useState(index === 0); // Expand only the first scenario by default
+  
+  // Handle both new and old format
+  const getDescription = () => {
+    return project.Innovation || 
+           project["Concise description"] || 
+           project["Original wording"] || 
+           "No description available";
+  };
+  
+  const title = projectId
+    ? projectId.replace('.json', '').replace(/-/g, ' ')
+    : `Scenario ${index + 1}`;
+
+  const hasCompetitors = project.output.competitors && project.output.competitors.length > 0;
+  const hasEvaluations = project.output.evaluation_results && project.output.evaluation_results.length > 0;
+  
+  // Get appropriate description based on the available fields
+  const description = getDescription();
+  
+  // Get the marketing version if available
+  const marketingVersion = project["Marketing version"] || null;
+
+  return (
+    <div className="border border-border/40 rounded-xl mb-8 bg-background subtle-shadow">
+      <div 
+        className="flex items-center justify-between p-4 cursor-pointer"
+        onClick={() => setExpanded(!expanded)}
+      >
+        <h2 className="text-xl font-semibold capitalize">{title}</h2>
+        <button className="text-muted-foreground hover:text-primary transition-colors">
+          {expanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+        </button>
+      </div>
+      
+      {expanded && (
+        <div className="p-6 pt-0 border-t border-border/40">
+          <div className="bg-card rounded-xl p-6 border border-border/40 mb-10 subtle-shadow">
+            {marketingVersion && (
+              <div className="mb-4 p-3 bg-primary/5 rounded-lg border border-primary/20">
+                <p className="text-lg italic text-primary-foreground">{marketingVersion}</p>
+              </div>
+            )}
+            <p className="text-lg leading-relaxed text-pretty">
+              {description}
+            </p>
+          </div>
+
+          <div className="space-y-8">
+            {/* Company Personas */}
+            <div className="space-y-6">
+              <div className="flex items-center gap-2">
+                <Building2 className="h-5 w-5 text-primary" />
+                <h2 className="text-xl font-semibold">Potential Industry Partners</h2>
+              </div>
+
+              <div className="space-y-6">
+                {project.output.persona_companies.map((company, idx) => (
+                  <CompanyCard key={idx} company={company} index={idx} />
+                ))}
+              </div>
+            </div>
+            
+            {/* Competitor Analysis */}
+            {hasCompetitors && (
+              <div className="space-y-6 mt-10">
+                <div className="flex items-center gap-2">
+                  <Target className="h-5 w-5 text-primary" />
+                  <h2 className="text-xl font-semibold">Competitor Analysis</h2>
+                </div>
+
+                <div className="space-y-6">
+                  {project.output.competitors!.map((competitor, idx) => (
+                    <CompetitorCard key={idx} competitor={competitor} index={idx} />
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {/* Evaluation Results */}
+            {hasEvaluations && (
+              <div className="space-y-6 mt-10">
+                <div className="flex items-center gap-2">
+                  <BarChart className="h-5 w-5 text-primary" />
+                  <h2 className="text-xl font-semibold">Market Evaluation</h2>
+                </div>
+
+                <div className="space-y-6">
+                  {project.output.evaluation_results!.map((evaluation, idx) => (
+                    <EvaluationCard key={idx} evaluation={evaluation} />
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const Index = () => {
   const [searchParams] = useSearchParams();
   const projectId = searchParams.get("id");
-  const [project, setProject] = useState<InnovationData | null>(null);
+  const [allProjects, setAllProjects] = useState<{[key: string]: InnovationData}>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchProjectDetails = async () => {
-      if (!projectId) {
-        toast.error("No project specified");
-        setLoading(false);
-        return;
-      }
-
+    const fetchAllProjects = async () => {
       try {
-        const response = await fetch(`/innovations/${projectId}`);
-        
-        if (!response.ok) {
-          throw new Error("Failed to load project details");
+        // First, fetch the list of all innovation files
+        const indexResponse = await fetch('/innovations/index.json');
+        if (!indexResponse.ok) {
+          throw new Error("Failed to load innovation index");
         }
         
-        const data = await response.json();
-        setProject(data);
+        const indexData = await indexResponse.json();
+        const fileNames = indexData.files;
+        
+        // Fetch each innovation file
+        const projects: {[key: string]: InnovationData} = {};
+        
+        await Promise.all(fileNames.map(async (fileName: string) => {
+          try {
+            const response = await fetch(`/innovations/${fileName}`);
+            if (response.ok) {
+              const data = await response.json();
+              projects[fileName] = data;
+            }
+          } catch (err) {
+            console.error(`Error loading ${fileName}:`, err);
+          }
+        }));
+        
+        setAllProjects(projects);
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : "An unknown error occurred";
-        toast.error("Failed to load project details", {
+        toast.error("Failed to load innovation projects", {
           description: errorMessage,
         });
       } finally {
@@ -247,8 +361,8 @@ const Index = () => {
       }
     };
 
-    fetchProjectDetails();
-  }, [projectId]);
+    fetchAllProjects();
+  }, []);
 
   if (loading) {
     return (
@@ -269,13 +383,13 @@ const Index = () => {
     );
   }
 
-  if (!project) {
+  if (Object.keys(allProjects).length === 0) {
     return (
       <div className="container max-w-4xl py-12 text-center">
         <div className="space-y-4">
-          <h1 className="text-2xl font-bold">Project Not Found</h1>
+          <h1 className="text-2xl font-bold">No Projects Found</h1>
           <p className="text-muted-foreground">
-            The project you're looking for doesn't exist or couldn't be loaded.
+            No innovation projects could be loaded.
           </p>
           <Button asChild>
             <Link to="/projects">Browse All Projects</Link>
@@ -285,27 +399,33 @@ const Index = () => {
     );
   }
 
-  // Handle both new and old format
-  const getDescription = () => {
-    return project.Innovation || 
-           project["Concise description"] || 
-           project["Original wording"] || 
-           "No description available";
-  };
+  // If a specific project ID is provided, show only that project
+  if (projectId && allProjects[projectId]) {
+    return (
+      <div className="min-h-screen w-full">
+        <div className="container max-w-4xl py-12">
+          <Button variant="ghost" asChild className="mb-6 -ml-2">
+            <Link to="/projects" className="flex items-center gap-2">
+              <ArrowLeft className="h-4 w-4" />
+              Back to Projects
+            </Link>
+          </Button>
 
-  const title = projectId
-    ? projectId.replace('.json', '').replace(/-/g, ' ')
-    : 'Project Details';
+          <h1 className="text-3xl font-bold tracking-tight mb-6 capitalize">
+            Innovation Details
+          </h1>
 
-  const hasCompetitors = project.output.competitors && project.output.competitors.length > 0;
-  const hasEvaluations = project.output.evaluation_results && project.output.evaluation_results.length > 0;
-  
-  // Get appropriate description based on the available fields
-  const description = getDescription();
-  
-  // Get the marketing version if available
-  const marketingVersion = project["Marketing version"] || null;
+          <ScenarioSection 
+            project={allProjects[projectId]} 
+            projectId={projectId} 
+            index={0} 
+          />
+        </div>
+      </div>
+    );
+  }
 
+  // If no specific project ID or an invalid ID, show all projects
   return (
     <div className="min-h-screen w-full">
       <div className="container max-w-4xl py-12">
@@ -316,68 +436,18 @@ const Index = () => {
           </Link>
         </Button>
 
-        <h1 className="text-3xl font-bold tracking-tight mb-4 capitalize">
-          {title}
+        <h1 className="text-3xl font-bold tracking-tight mb-6">
+          Innovation Scenarios
         </h1>
 
-        <div className="bg-card rounded-xl p-6 border border-border/40 mb-10 subtle-shadow">
-          {marketingVersion && (
-            <div className="mb-4 p-3 bg-primary/5 rounded-lg border border-primary/20">
-              <p className="text-lg italic text-primary-foreground">{marketingVersion}</p>
-            </div>
-          )}
-          <p className="text-lg leading-relaxed text-pretty">
-            {description}
-          </p>
-        </div>
-
-        <div className="space-y-8">
-          {/* Company Personas */}
-          <div className="space-y-6">
-            <div className="flex items-center gap-2">
-              <Building2 className="h-5 w-5 text-primary" />
-              <h2 className="text-xl font-semibold">Potential Industry Partners</h2>
-            </div>
-
-            <div className="space-y-6">
-              {project.output.persona_companies.map((company, index) => (
-                <CompanyCard key={index} company={company} index={index} />
-              ))}
-            </div>
-          </div>
-          
-          {/* Competitor Analysis */}
-          {hasCompetitors && (
-            <div className="space-y-6 mt-10">
-              <div className="flex items-center gap-2">
-                <Target className="h-5 w-5 text-primary" />
-                <h2 className="text-xl font-semibold">Competitor Analysis</h2>
-              </div>
-
-              <div className="space-y-6">
-                {project.output.competitors!.map((competitor, index) => (
-                  <CompetitorCard key={index} competitor={competitor} index={index} />
-                ))}
-              </div>
-            </div>
-          )}
-          
-          {/* Evaluation Results */}
-          {hasEvaluations && (
-            <div className="space-y-6 mt-10">
-              <div className="flex items-center gap-2">
-                <BarChart className="h-5 w-5 text-primary" />
-                <h2 className="text-xl font-semibold">Market Evaluation</h2>
-              </div>
-
-              <div className="space-y-6">
-                {project.output.evaluation_results!.map((evaluation, index) => (
-                  <EvaluationCard key={index} evaluation={evaluation} />
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
+        {Object.entries(allProjects).map(([fileName, project], index) => (
+          <ScenarioSection 
+            key={fileName}
+            project={project} 
+            projectId={fileName} 
+            index={index} 
+          />
+        ))}
       </div>
     </div>
   );
