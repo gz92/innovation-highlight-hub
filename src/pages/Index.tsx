@@ -39,21 +39,16 @@ const Index = () => {
         const extractedScenarios: Array<{id: string, name: string, data: InnovationData}> = [];
         
         const extractScenarios = (data: InnovationData) => {
-          if (data.PropID) {
+          // Store the main innovation text if available
+          if (data.Innovation) {
+            setMainInnovationText(data.Innovation);
+          }
+          
+          // Only add scenarios with proper PropID and valid data
+          if (data.PropID && data.output) {
             extractedScenarios.push({
               id: data.PropID.trim(),
               name: data["Idea name"] || `Scenario ${data.PropID.trim()}`,
-              data: data
-            });
-          } else {
-            // Store the main innovation text if available
-            if (data.Innovation) {
-              setMainInnovationText(data.Innovation);
-            }
-            
-            extractedScenarios.push({
-              id: "main",
-              name: "Main Scenario",
               data: data
             });
           }
@@ -69,6 +64,8 @@ const Index = () => {
         } else {
           extractScenarios(data);
         }
+        
+        console.log("Extracted scenarios:", extractedScenarios);
         
         setScenarios(extractedScenarios);
         
