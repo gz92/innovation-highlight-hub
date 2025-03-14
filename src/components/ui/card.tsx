@@ -77,4 +77,19 @@ const CardFooter = React.forwardRef<
 ))
 CardFooter.displayName = "CardFooter"
 
-export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent }
+const CardGroup = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={cn(
+      "bg-card/50 rounded-xl border-2 border-border/40 p-6 hover:border-primary/20 transition-colors space-y-4",
+      className
+    )}
+    {...props}
+  />
+))
+CardGroup.displayName = "CardGroup"
+
+export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent, CardGroup }
