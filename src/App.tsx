@@ -11,6 +11,7 @@ import Home from "./pages/Home";
 import ProjectBrowser from "./pages/ProjectBrowser";
 import Index from "./pages/Index";
 import SubmitInnovation from "./pages/SubmitInnovation";
+import Services from "./pages/Services";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,6 +30,7 @@ const App = () => (
               <Route path="/projects" element={<ProjectBrowser />} />
               <Route path="/project-details" element={<Index />} />
               <Route path="/submit" element={<SubmitInnovation />} />
+              <Route path="/services" element={<Services />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
