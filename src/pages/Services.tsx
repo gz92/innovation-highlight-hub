@@ -1,6 +1,8 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BeakerIcon, Users, Search, BarChart3Icon, Globe } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 export default function Services() {
   const services = [
@@ -90,16 +92,12 @@ export default function Services() {
         {/* Call to action section */}
         <div className="mt-16 py-10 px-8 rounded-xl bg-secondary/50 border border-border/40 text-center space-y-4">
           <h2 className="text-2xl font-bold">Ready to Transform Your Innovation?</h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            Our team of specialists is ready to help you navigate the path from research to market success.
-          </p>
           <div className="mt-4">
-            <a 
-              href="mailto:contact@innovationhub.org" 
-              className="inline-flex items-center justify-center bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-6 py-2 rounded-md text-sm font-medium transition-colors"
-            >
-              Contact Us Today
-            </a>
+            <Button asChild>
+              <Link to="/submit">
+                Submit Your Innovation
+              </Link>
+            </Button>
           </div>
         </div>
       </div>
