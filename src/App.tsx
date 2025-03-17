@@ -16,13 +16,16 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+// Get the base URL from the environment or use a default for GitHub Pages
+const baseUrl = import.meta.env.BASE_URL || '/innovation-highlight-hub/';
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider defaultTheme="light">
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
+        <BrowserRouter basename={baseUrl}>
           <ParallaxBackground>
             <Navbar />
             <Routes>
