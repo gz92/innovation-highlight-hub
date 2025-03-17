@@ -1,6 +1,8 @@
 
 {
   "files": [
+    "3dx_v2.json",
+    "proplanta.json",
     "HCS-3DX.json",
     "bio-3d-models.json",
     "biosensors.json",
