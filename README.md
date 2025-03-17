@@ -1,3 +1,4 @@
+
 # Welcome to your Lovable project
 
 ## Project info
@@ -50,6 +51,10 @@ npm run dev
 - Click on "New codespace" to launch a new Codespace environment.
 - Edit files directly within the Codespace and commit and push your changes once you're done.
 
+## Continuous Deployment
+
+This project is set up with GitHub Actions for continuous deployment. When you push changes to the main branch, your project will be automatically built and deployed to GitHub Pages. This eliminates the need for manual publishing.
+
 ## What technologies are used for this project?
 
 This project is built with .
@@ -64,6 +69,10 @@ This project is built with .
 
 Simply open [Lovable](https://lovable.dev/projects/c06cd3fe-d94b-49e4-b825-acf47b48326a) and click on Share -> Publish.
 
+For automatic deployments, use GitHub integration and push to the main branch - GitHub Actions will handle the deployment for you.
+
 ## I want to use a custom domain - is that possible?
 
 We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+
+Alternatively, you can use GitHub Pages with a custom domain by configuring the CNAME file in the public directory and setting up your domain's DNS.
